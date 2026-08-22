@@ -1,0 +1,139 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import dbConnect from "@/lib/mongodb";
+import Product from "@/models/Product";
+import Papa from "papaparse";
+
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    await dbConnect();
+
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      return NextResponse.json({ message: "CSV file is required" }, { status: 400 });
+    }
+
+    const text = await file.text();
+    const parsed = Papa.parse(text, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: (h: string) => h.trim(),
+    });
+
+    const validRows: any[] = [];
+    const invalidRows: { row: number; errors: string[]; data: any }[] = [];
+
+    // Check for existing SKUs
+    const allSkus = parsed.data
+      .map((row: any) => row.SKU || row.sku)
+      .filter(Boolean);
+    const existingProducts = await Product.find({
+      sku: { $in: allSkus },
+    }).select("sku");
+    const existingSkuSet = new Set(existingProducts.map((p) => p.sku));
+
+    for (let i = 0; i < parsed.data.length; i++) {
+      const row: any = parsed.data[i];
+      const errors: string[] = [];
+
+      const name = row.Name || row.name || "";
+      const sku = row.SKU || row.sku || "";
+      const price = parseFloat(row.Price || row.price || "0");
+      const stock = parseInt(row.Stock || row.stock || "0");
+      const category = row.Category || row.category || "";
+
+      if (!name.trim()) errors.push("Name is required");
+      if (!sku.trim()) errors.push("SKU is required");
+      if (!price || price <= 0) errors.push("Valid price is required");
+      if (stock < 0) errors.push("Stock cannot be negative");
+      if (!category.trim()) errors.push("Category is required");
+
+      if (existingSkuSet.has(sku)) {
+        errors.push(`SKU "${sku}" already exists`);
+      }
+
+      if (errors.length > 0) {
+        invalidRows.push({ row: i + 2, errors, data: row }); // +2 for header + 0-index
+      } else {
+        const slug = name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+        validRows.push({
+          name: name.trim(),
+          slug: `${slug}-${Date.now()}-${i}`,
+          brand: (row.Brand || row.brand || "").trim(),
+          description: (row.Description || row.description || name).trim(),
+          shortDescription: (row["Short Description"] || row.shortDescription || "").trim(),
+          price,
+          discountPrice: parseFloat(row["Discount Price"] || row.discountPrice || "0") || undefined,
+          sku: sku.trim(),
+          stock,
+          images: (row["Image URLs"] || row.images || row.imageUrls || "")
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean),
+          tags: (row.Tags || row.tags || "")
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean),
+          isActive: true,
+          // Category will be resolved by name
+          _categoryName: category.trim(),
+        });
+      }
+    }
+
+    // Resolve category names to IDs
+    const Category = (await import("@/models/Category")).default;
+    const categoryNames = [...new Set(validRows.map((r) => r._categoryName))];
+    const categories = await Category.find({
+      name: { $in: categoryNames.map((n) => new RegExp(`^${n}$`, "i")) },
+    });
+    const categoryMap = new Map(
+      categories.map((c: any) => [c.name.toLowerCase(), c._id])
+    );
+
+    const finalValidRows: any[] = [];
+    for (const row of validRows) {
+      const catId = categoryMap.get(row._categoryName.toLowerCase());
+      if (!catId) {
+        invalidRows.push({
+          row: 0,
+          errors: [`Category "${row._categoryName}" not found`],
+          data: row,
+        });
+      } else {
+        const { _categoryName, ...rest } = row;
+        finalValidRows.push({ ...rest, category: catId });
+      }
+    }
+
+    let imported = 0;
+    if (finalValidRows.length > 0) {
+      const result = await Product.insertMany(finalValidRows, {
+        ordered: false,
+      });
+      imported = result.length;
+    }
+
+    return NextResponse.json({
+      imported,
+      valid: finalValidRows.length,
+      invalid: invalidRows.length,
+      invalidRows: invalidRows.slice(0, 50), // Limit response size
+      total: parsed.data.length,
+    });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
+}
