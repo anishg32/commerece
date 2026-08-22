@@ -138,6 +138,9 @@ export default function DashboardOrdersPage() {
               <span className="text-muted-foreground uppercase text-xs font-medium tracking-wider">
                 Payment: {order.paymentMethod} ({order.paymentStatus})
               </span>
+              <Button size="sm" asChild>
+                <Link href={`/dashboard/orders/${order.orderId}`}>Track Order / Details</Link>
+              </Button>
             </div>
           </div>
         ))}

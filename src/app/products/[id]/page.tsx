@@ -19,6 +19,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [isProcessingBuyNow, setIsProcessingBuyNow] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [newReview, setNewReview] = useState({ rating: 5, text: "" });
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   
   const { addItem: addToCart } = useCartStore();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
@@ -40,8 +43,43 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       }
     };
 
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/products/${resolvedParams.id}/reviews`);
+        if (res.ok) {
+          setReviews(await res.json());
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     fetchProduct();
+    fetchReviews();
   }, [resolvedParams.id]);
+
+  const submitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingReview(true);
+    try {
+      const res = await fetch(`/api/products/${product._id}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rating: newReview.rating, reviewText: newReview.text })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      alert("Review submitted successfully!");
+      setNewReview({ rating: 5, text: "" });
+      // Refresh reviews
+      const rRes = await fetch(`/api/products/${product._id}/reviews`);
+      if (rRes.ok) setReviews(await rRes.json());
+    } catch (e: any) {
+      alert(e.message || "Failed to submit review");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -402,6 +440,94 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   ))}
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-24 mb-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">Customer Reviews</h2>
+        </div>
+        
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Write Review Form */}
+          <div className="lg:col-span-1">
+            <div className="bg-card border rounded-2xl p-6 sticky top-24">
+              <h3 className="font-bold text-lg mb-4">Write a Review</h3>
+              <form onSubmit={submitReview} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Rating</label>
+                  <div className="flex gap-1">
+                    {[1,2,3,4,5].map(star => (
+                      <button 
+                        key={star}
+                        type="button"
+                        onClick={() => setNewReview({ ...newReview, rating: star })}
+                        className={`transition-colors ${star <= newReview.rating ? "text-yellow-500" : "text-muted opacity-30 hover:opacity-50"}`}
+                      >
+                        <Star className="w-6 h-6 fill-current" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Review</label>
+                  <textarea 
+                    required
+                    rows={4}
+                    value={newReview.text}
+                    onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+                    placeholder="What did you like or dislike?"
+                    className="w-full px-3 py-2 rounded-lg border bg-background text-sm resize-none focus:ring-2 focus:ring-primary outline-none"
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isSubmittingReview}>
+                  {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                </Button>
+                <p className="text-xs text-muted-foreground text-center mt-2">You can only review if you have purchased this product.</p>
+              </form>
+            </div>
+          </div>
+
+          {/* Reviews List */}
+          <div className="lg:col-span-2 space-y-6">
+            {reviews.length === 0 ? (
+              <div className="text-center py-12 bg-secondary/20 border rounded-2xl">
+                <Star className="w-12 h-12 text-muted-foreground opacity-20 mx-auto mb-3" />
+                <h3 className="font-semibold text-lg mb-1">No reviews yet</h3>
+                <p className="text-muted-foreground">Be the first to review this product!</p>
+              </div>
+            ) : (
+              reviews.map((review) => (
+                <div key={review._id} className="bg-card border rounded-2xl p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-primary">
+                        {review.user?.name?.[0] || 'A'}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">{review.user?.name || 'Anonymous'}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(review.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 text-yellow-500">
+                      {[1,2,3,4,5].map(star => (
+                        <Star key={star} className={`w-4 h-4 ${star <= review.rating ? "fill-current" : "text-muted opacity-30"}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
+                    {review.reviewText}
+                  </p>
+                  {review.isVerifiedPurchase && (
+                    <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-500/10 w-fit px-2 py-1 rounded-md">
+                      <Check className="w-3 h-3" /> Verified Purchase
+                    </div>
+                  )}
+                </div>
+              ))
             )}
           </div>
         </div>

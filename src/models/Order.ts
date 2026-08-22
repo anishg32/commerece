@@ -56,8 +56,18 @@ export interface IOrder extends Document {
     | "Out for Delivery"
     | "Delivered"
     | "Cancelled"
+    | "Return Requested"
     | "Returned"
     | "Refunded";
+  cancellationReason?: string;
+  cancelledAt?: Date;
+  returnReason?: string;
+  returnStatus?: "Pending" | "Approved" | "Rejected" | "Completed";
+  trackingHistory: {
+    status: string;
+    timestamp: Date;
+    comment?: string;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -131,11 +141,26 @@ const OrderSchema: Schema = new Schema(
         "Out for Delivery",
         "Delivered",
         "Cancelled",
+        "Return Requested",
         "Returned",
         "Refunded",
       ],
       default: "Pending",
     },
+    cancellationReason: { type: String },
+    cancelledAt: { type: Date },
+    returnReason: { type: String },
+    returnStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected", "Completed"],
+    },
+    trackingHistory: [
+      {
+        status: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+        comment: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );

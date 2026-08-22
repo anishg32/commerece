@@ -24,6 +24,9 @@ function CheckoutContent() {
     fullName: "", phone: "", address: "", city: "", state: "", postalCode: "", country: "India"
   });
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("razorpay");
+  
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [useNewAddress, setUseNewAddress] = useState(false);
 
   useEffect(() => {
     if (!sessionId) {
@@ -39,6 +42,28 @@ function CheckoutContent() {
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
+
+    // Fetch saved addresses if logged in
+    fetch("/api/user/addresses")
+      .then(r => { if(r.ok) return r.json(); return []; })
+      .then(data => {
+        if (data && data.length > 0) {
+          setSavedAddresses(data);
+          const defaultAddr = data.find((a: any) => a.isDefault) || data[0];
+          setShipping({
+            fullName: defaultAddr.fullName,
+            phone: defaultAddr.phone,
+            address: `${defaultAddr.houseBuilding}, ${defaultAddr.street}`,
+            city: defaultAddr.city,
+            state: defaultAddr.state,
+            postalCode: defaultAddr.pinCode,
+            country: defaultAddr.country
+          });
+        } else {
+          setUseNewAddress(true);
+        }
+      })
+      .catch(e => console.error(e));
   }, [sessionId, router]);
 
   const loadRazorpayScript = () => {
@@ -201,23 +226,69 @@ function CheckoutContent() {
                   <button type="button" onClick={() => setStep(1)} className="text-sm text-primary hover:underline">Edit Customer</button>
                 </div>
                 
-                <div className="flex justify-end mb-2">
-                  <button type="button" className="text-xs text-primary" onClick={() => setShipping({...shipping, fullName: customer.name, phone: customer.phone})}>
-                    Use customer details
-                  </button>
+                <div className="flex justify-end mb-4">
+                  {!useNewAddress && savedAddresses.length > 0 && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setUseNewAddress(true)}>
+                      + Add New Address
+                    </Button>
+                  )}
+                  {useNewAddress && savedAddresses.length > 0 && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setUseNewAddress(false)}>
+                      Use Saved Address
+                    </Button>
+                  )}
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Full Name *" required value={shipping.fullName} onChange={e => setShipping({...shipping, fullName: e.target.value})} className={inputClass} />
-                  <input type="tel" placeholder="Phone *" required value={shipping.phone} onChange={e => setShipping({...shipping, phone: e.target.value})} className={inputClass} />
-                  <div className="sm:col-span-2">
-                    <input type="text" placeholder="Street Address *" required value={shipping.address} onChange={e => setShipping({...shipping, address: e.target.value})} className={inputClass} />
+                {!useNewAddress && savedAddresses.length > 0 ? (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {savedAddresses.map((addr) => (
+                      <label 
+                        key={addr._id} 
+                        className={`border rounded-xl p-4 cursor-pointer transition-colors ${
+                          shipping.address.includes(addr.street) 
+                            ? "border-primary bg-primary/5 ring-1 ring-primary" 
+                            : "hover:border-primary/50"
+                        }`}
+                      >
+                        <input 
+                          type="radio" 
+                          name="savedAddress" 
+                          className="sr-only"
+                          checked={shipping.address.includes(addr.street)}
+                          onChange={() => {
+                            setShipping({
+                              fullName: addr.fullName,
+                              phone: addr.phone,
+                              address: `${addr.houseBuilding}, ${addr.street}`,
+                              city: addr.city,
+                              state: addr.state,
+                              postalCode: addr.pinCode,
+                              country: addr.country
+                            });
+                          }}
+                        />
+                        <div className="font-semibold">{addr.fullName}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {addr.houseBuilding}, {addr.street}<br/>
+                          {addr.city}, {addr.state} - {addr.pinCode}<br/>
+                          {addr.phone}
+                        </div>
+                      </label>
+                    ))}
                   </div>
-                  <input type="text" placeholder="City *" required value={shipping.city} onChange={e => setShipping({...shipping, city: e.target.value})} className={inputClass} />
-                  <input type="text" placeholder="State/Province *" required value={shipping.state} onChange={e => setShipping({...shipping, state: e.target.value})} className={inputClass} />
-                  <input type="text" placeholder="Postal Code *" required value={shipping.postalCode} onChange={e => setShipping({...shipping, postalCode: e.target.value})} className={inputClass} />
-                  <input type="text" value={shipping.country} disabled className={`${inputClass} bg-secondary/50`} />
-                </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <input type="text" placeholder="Full Name *" required value={shipping.fullName} onChange={e => setShipping({...shipping, fullName: e.target.value})} className={inputClass} />
+                    <input type="tel" placeholder="Phone *" required value={shipping.phone} onChange={e => setShipping({...shipping, phone: e.target.value})} className={inputClass} />
+                    <div className="sm:col-span-2">
+                      <input type="text" placeholder="Street Address *" required value={shipping.address} onChange={e => setShipping({...shipping, address: e.target.value})} className={inputClass} />
+                    </div>
+                    <input type="text" placeholder="City *" required value={shipping.city} onChange={e => setShipping({...shipping, city: e.target.value})} className={inputClass} />
+                    <input type="text" placeholder="State/Province *" required value={shipping.state} onChange={e => setShipping({...shipping, state: e.target.value})} className={inputClass} />
+                    <input type="text" placeholder="Postal Code *" required value={shipping.postalCode} onChange={e => setShipping({...shipping, postalCode: e.target.value})} className={inputClass} />
+                    <input type="text" value={shipping.country} disabled className={`${inputClass} bg-secondary/50`} />
+                  </div>
+                )}
                 
                 <div className="flex gap-4 mt-6">
                   <Button type="button" variant="outline" size="lg" onClick={() => setStep(1)}>Back</Button>

@@ -76,8 +76,12 @@ export default function CartPage() {
       
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         <div className="flex-1 space-y-6">
-          {items.map((item) => (
-            <div key={`${item._id}-${JSON.stringify(item.variant)}`} className="flex flex-col sm:flex-row gap-4 p-4 bg-card border rounded-2xl relative group">
+          {items.map((item, index) => (
+            <div 
+              key={`${item._id}-${JSON.stringify(item.variant)}`} 
+              className="flex flex-col sm:flex-row gap-4 p-4 bg-card border rounded-2xl relative group animate-in fade-in slide-in-from-bottom-4"
+              style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
+            >
               <Link href={`/products/${item._id}`} className="shrink-0">
                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-secondary rounded-xl overflow-hidden">
                   <Image src={item.image} alt={item.name} fill className="object-cover" />
@@ -139,8 +143,8 @@ export default function CartPage() {
           ))}
         </div>
         
-        <div className="w-full lg:w-96 shrink-0">
-          <div className="bg-card border rounded-2xl p-6 sticky top-24">
+        <div className="w-full lg:w-96 shrink-0 animate-in fade-in slide-in-from-right-8 duration-500">
+          <div className="glass-card rounded-2xl p-6 sticky top-24">
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
             
             <div className="space-y-4 text-sm mb-6">
