@@ -45,8 +45,8 @@ export default function CartPage() {
       }
 
       router.push(`/checkout?session_id=${data.sessionId}`);
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert((e instanceof Error ? e.message : String(e)));
       setIsProcessing(false);
     }
   };

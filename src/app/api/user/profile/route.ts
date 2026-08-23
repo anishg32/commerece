@@ -72,10 +72,10 @@ export async function PUT(request: Request) {
     }
 
     return NextResponse.json({ error: "No update data provided" }, { status: 400 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating profile:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to update profile" },
+      { error: (error instanceof Error ? error.message : String(error)) || "Failed to update profile" },
       { status: 500 }
     );
   }

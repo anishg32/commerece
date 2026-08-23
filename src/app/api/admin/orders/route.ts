@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     const status = searchParams.get("status") || "";
     const paymentMethod = searchParams.get("paymentMethod") || "";
 
-    const query: any = {};
+    const query: Record<string, any> = {};
     if (status) query.status = status;
     if (paymentMethod) query.paymentMethod = paymentMethod;
 
@@ -37,8 +37,8 @@ export async function GET(req: Request) {
       page,
       pages: Math.ceil(total / limit),
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -56,7 +56,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ message: "Order ID is required" }, { status: 400 });
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, any> = {};
     if (status) updateData.status = status;
     if (isDelivered !== undefined) {
       updateData.isDelivered = isDelivered;
@@ -74,7 +74,7 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json(order);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

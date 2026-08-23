@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const sort = searchParams.get("sort") || "newest"; // newest, price_asc, price_desc, rating
     
     // Base query: Only active, non-deleted, and VERIFIED ACTIVE products
-    const query: any = { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" };
+    const query: Record<string, any> = { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" };
 
     // Search
     if (search) {
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
       page,
       pages: Math.ceil(total / limit)
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

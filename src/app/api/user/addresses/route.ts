@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json(addresses);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching addresses:", error);
     return NextResponse.json(
       { error: "Failed to fetch addresses" },
@@ -57,10 +57,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(address, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating address:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to create address" },
+      { error: (error instanceof Error ? error.message : String(error)) || "Failed to create address" },
       { status: 500 }
     );
   }

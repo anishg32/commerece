@@ -83,8 +83,8 @@ export async function POST(req: Request) {
     await checkoutSession.save();
 
     return NextResponse.json({ orderId: newOrder.orderId, success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("COD Processing Error:", error);
-    return NextResponse.json({ message: error.message || "Failed to process COD order" }, { status: 500 });
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) || "Failed to process COD order" }, { status: 500 });
   }
 }

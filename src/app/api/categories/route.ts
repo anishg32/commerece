@@ -18,15 +18,15 @@ export async function GET() {
       { $group: { _id: "$category", count: { $sum: 1 } } }
     ]);
     
-    const countMap = new Map(counts.map((c: any) => [c._id.toString(), c.count]));
+    const countMap = new Map(counts.map((c: Record<string, any>) => [c._id.toString(), c.count]));
 
-    const categoriesWithCounts = categories.map((cat: any) => ({
+    const categoriesWithCounts = categories.map((cat: Record<string, any>) => ({
       ...cat,
       productCount: countMap.get(cat._id.toString()) || 0,
     }));
 
     return NextResponse.json(categoriesWithCounts);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

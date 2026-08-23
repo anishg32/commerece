@@ -37,7 +37,7 @@ export interface IProduct extends Document {
   sku: string;
   
   // Dynamic E-Commerce Engine
-  attributes: Map<string, any>;
+  attributes: Map<string, unknown>;
   variants?: IProductVariant[];
   
   rating: number;

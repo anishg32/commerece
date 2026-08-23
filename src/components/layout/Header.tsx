@@ -2,11 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Search, ShoppingBag, Heart, User, Menu, X, Loader2, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
+
+interface CategoryResponse {
+  _id: string;
+  name: string;
+  slug: string;
+  subcategories: { name: string; slug: string }[];
+}
+
+interface ProductSearchResponse {
+  _id: string;
+  name: string;
+  price: number;
+  thumbnail?: string;
+  images?: { url: string }[];
+}
 
 export function Header() {
   const router = useRouter();
@@ -15,14 +31,14 @@ export function Header() {
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const categoriesLinkRef = useRef<HTMLButtonElement>(null);
   
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<ProductSearchResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -73,8 +89,6 @@ export function Header() {
   // Debounced Search
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setShowSearchDropdown(false);
       return;
     }
 
@@ -132,13 +146,13 @@ export function Header() {
                   className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[800px] bg-card border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 p-8 grid grid-cols-3 gap-8 z-50"
                   onClick={() => setShowMegaMenu(false)}
                 >
-                  {categories.length > 0 ? categories.map((cat: any) => (
+                  {categories.length > 0 ? categories.map((cat: CategoryResponse) => (
                     <div key={cat._id} className="flex flex-col gap-3">
                       <Link href={`/category/${cat.slug}`} className="font-bold text-base hover:text-primary transition-colors">
                         {cat.name}
                       </Link>
                       <div className="flex flex-col gap-2">
-                        {cat.subcategories?.map((sub: any) => (
+                        {cat.subcategories?.map((sub: { name: string; slug: string }) => (
                           <Link 
                             key={sub.slug} 
                             href={`/products?category=${cat.slug}&subcategory=${sub.slug}`}
@@ -177,7 +191,13 @@ export function Header() {
                   type="text" 
                   placeholder="Search products..." 
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (!e.target.value.trim()) {
+                      setSearchResults([]);
+                      setShowSearchDropdown(false);
+                    }
+                  }}
                   onFocus={() => { if(searchQuery) setShowSearchDropdown(true); }}
                   className="pl-10 pr-4 py-2 bg-secondary/50 border-transparent focus:bg-background focus:border-ring outline-none rounded-full text-sm transition-all w-[200px] focus:w-[300px]"
                 />
@@ -197,8 +217,8 @@ export function Header() {
                           onClick={() => { setShowSearchDropdown(false); setSearchQuery(""); }}
                           className="flex items-center gap-3 px-4 py-2 hover:bg-secondary transition-colors"
                         >
-                          <div className="w-10 h-10 bg-secondary rounded overflow-hidden shrink-0">
-                            <img src={product.thumbnail || product.images?.[0]?.url || ""} alt={product.name} className="w-full h-full object-cover" />
+                          <div className="w-10 h-10 bg-secondary rounded overflow-hidden shrink-0 relative">
+                            <Image src={product.thumbnail || product.images?.[0]?.url || ""} alt={product.name} fill className="object-cover" sizes="40px" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium truncate">{product.name}</div>
@@ -217,7 +237,7 @@ export function Header() {
                     </div>
                   ) : searchQuery.length > 1 && !isSearching ? (
                     <div className="p-8 text-center text-muted-foreground text-sm">
-                      No products found for "{searchQuery}"
+                      No products found for &quot;{searchQuery}&quot;
                     </div>
                   ) : null}
                 </div>

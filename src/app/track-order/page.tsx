@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Package, Truck, CheckCircle2, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -9,6 +9,14 @@ export default function TrackOrderPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "found" | "error">("idle");
   const [orderStatus, setOrderStatus] = useState("");
+  const [expectedDelivery, setExpectedDelivery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setExpectedDelivery(new Date(Date.now() + 86400000 * 2).toLocaleDateString());
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +85,7 @@ export default function TrackOrderPage() {
 
         {status === "error" && (
           <div className="mt-6 p-4 bg-destructive/10 text-destructive rounded-xl text-sm font-medium text-center">
-            We couldn't find an order with that ID and email combination. Please check your details and try again.
+            We couldn&apos;t find an order with that ID and email combination. Please check your details and try again.
           </div>
         )}
       </div>
@@ -86,7 +94,7 @@ export default function TrackOrderPage() {
         <div className="bg-card border rounded-3xl p-8 shadow-sm">
           <div className="mb-10 text-center">
             <h2 className="text-2xl font-bold mb-2">Order {orderId.toUpperCase()}</h2>
-            <p className="text-muted-foreground">Expected Delivery: {new Date(Date.now() + 86400000 * 2).toLocaleDateString()}</p>
+            <p className="text-muted-foreground">Expected Delivery: {expectedDelivery}</p>
           </div>
 
           <div className="relative flex justify-between items-center max-w-xl mx-auto mb-8">

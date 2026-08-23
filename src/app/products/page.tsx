@@ -9,8 +9,8 @@ import { useCartStore } from "@/store/useCartStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<Record<string, any>[]>([]);
+  const [categories, setCategories] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
@@ -37,7 +37,10 @@ export default function ProductsPage() {
 
   // Reset attribute filters when category changes
   useEffect(() => {
-    setAttributeFilters({});
+    const timer = setTimeout(() => {
+      setAttributeFilters({});
+    }, 0);
+    return () => clearTimeout(timer);
   }, [category]);
 
   useEffect(() => {
@@ -82,7 +85,7 @@ export default function ProductsPage() {
     fetchProducts();
   }, [page, category, sort, attributeFilters]);
 
-  const handleAddToCart = (e: React.MouseEvent, product: any) => {
+  const handleAddToCart = (e: React.MouseEvent, product: Record<string, any>) => {
     e.preventDefault();
     addToCart({
       _id: product._id,
@@ -95,7 +98,7 @@ export default function ProductsPage() {
     alert(`Added ${product.name} to cart!`);
   };
 
-  const toggleWishlist = (e: React.MouseEvent, product: any) => {
+  const toggleWishlist = (e: React.MouseEvent, product: Record<string, any>) => {
     e.preventDefault();
     if (isInWishlist(product._id)) {
       removeFromWishlist(product._id);
@@ -175,7 +178,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Dynamic Attribute Filters based on Selected Category */}
-          {activeCategoryData && activeCategoryData.attributes?.filter((attr: any) => attr.isFilterable && attr.options?.length > 0).map((attr: any) => (
+          {activeCategoryData && activeCategoryData.attributes?.filter((attr: Record<string, any>) => attr.isFilterable && attr.options?.length > 0).map((attr: Record<string, any>) => (
             <div key={attr.name} className="animate-in fade-in slide-in-from-top-4">
               <h3 className="font-semibold mb-4 pb-2 border-b">{attr.name}</h3>
               {attr.type === "color" ? (

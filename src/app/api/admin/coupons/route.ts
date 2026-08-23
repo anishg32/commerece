@@ -38,10 +38,10 @@ export async function POST(request: Request) {
     const coupon = await Coupon.create(body);
     
     return NextResponse.json({ success: true, coupon }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating coupon:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to create coupon" },
+      { error: (error instanceof Error ? error.message : String(error)) || "Failed to create coupon" },
       { status: 500 }
     );
   }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/db";
+import dbConnect from "@/lib/mongodb";
 import Newsletter from "@/models/Newsletter";
 
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
 
     // Check if already subscribed
     const existingSubscriber = await Newsletter.findOne({ email: email.toLowerCase() });
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     await Newsletter.create({ email });
 
     return NextResponse.json({ message: "Successfully subscribed to the newsletter!" }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Newsletter Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },

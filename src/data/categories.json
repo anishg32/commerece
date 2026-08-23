@@ -2,192 +2,189 @@
   {
     "name": "Electronics",
     "slug": "electronics",
+    "description": "Premium electronics and gadgets",
     "image": {
       "url": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Electronics & Gadgets"
+      "altText": "Electronics"
     },
+    "icon": "Cpu",
     "subcategories": [
-      { "name": "Smartphones", "slug": "smartphones" },
-      { "name": "Tablets", "slug": "tablets" },
-      { "name": "Smartwatches", "slug": "smartwatches" }
-    ],
-    "attributes": [
-      { "name": "Storage", "type": "select", "options": ["64GB", "128GB", "256GB", "512GB", "1TB"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "RAM", "type": "select", "options": ["4GB", "6GB", "8GB", "12GB", "16GB"], "isRequired": false, "isFilterable": true, "isVariantKey": true },
-      { "name": "Color", "type": "color", "options": ["Black", "White", "Silver", "Blue", "Gold", "Natural Titanium"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Processor", "type": "text", "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Display", "type": "text", "isRequired": false, "isFilterable": false, "isVariantKey": false },
-      { "name": "Battery", "type": "text", "isRequired": false, "isFilterable": false, "isVariantKey": false }
+      {
+        "name": "Accessories",
+        "slug": "accessories"
+      }
+    ]
+  },
+  {
+    "name": "Mobiles & Accessories",
+    "slug": "mobiles-accessories",
+    "description": "Latest smartphones and premium cases",
+    "image": {
+      "url": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-model-unselect-gallery-2-202309?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693010533034",
+      "altText": "Mobiles"
+    },
+    "icon": "Smartphone",
+    "subcategories": [
+      {
+        "name": "Smartphones",
+        "slug": "smartphones"
+      },
+      {
+        "name": "Cases",
+        "slug": "cases"
+      }
     ]
   },
   {
     "name": "Computers & Laptops",
-    "slug": "computers",
+    "slug": "computers-laptops",
+    "description": "High-performance computing for work and play",
     "image": {
-      "url": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Laptops and Computers"
+      "url": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-15-9530/media-gallery/touch-black/notebook-xps-15-9530-t-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=402&wid=555&qlt=100,1&resMode=sharp2&size=555,402&chrss=full",
+      "altText": "Computers"
     },
+    "icon": "Laptop",
     "subcategories": [
-      { "name": "Gaming Laptops", "slug": "gaming-laptops" },
-      { "name": "MacBooks", "slug": "macbooks" },
-      { "name": "Windows Laptops", "slug": "windows-laptops" }
-    ],
-    "attributes": [
-      { "name": "Processor", "type": "text", "isRequired": true, "isFilterable": true, "isVariantKey": false },
-      { "name": "RAM", "type": "select", "options": ["8GB", "16GB", "32GB", "64GB"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Storage", "type": "select", "options": ["256GB", "512GB", "1TB", "2TB"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "GPU", "type": "text", "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Screen Size", "type": "select", "options": ["13-inch", "14-inch", "15-inch", "16-inch", "17-inch"], "isRequired": true, "isFilterable": true, "isVariantKey": true }
+      {
+        "name": "Laptops",
+        "slug": "laptops"
+      },
+      {
+        "name": "Desktops",
+        "slug": "desktops"
+      }
     ]
   },
   {
-    "name": "TV & Home Entertainment",
-    "slug": "tvs",
+    "name": "TVs & Home Entertainment",
+    "slug": "tvs-home-entertainment",
+    "description": "Cinematic experiences in your living room",
     "image": {
-      "url": "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&q=80&w=1000",
-      "altText": "TV and Home Entertainment"
+      "url": "https://www.lg.com/us/images/tvs/md08003664/gallery/dz01.jpg",
+      "altText": "TVs"
     },
+    "icon": "Tv",
     "subcategories": [
-      { "name": "Smart TVs", "slug": "smart-tvs" },
-      { "name": "OLED TVs", "slug": "oled-tvs" },
-      { "name": "Soundbars", "slug": "soundbars" }
-    ],
-    "attributes": [
-      { "name": "Screen Size", "type": "select", "options": ["43-inch", "50-inch", "55-inch", "65-inch", "75-inch", "85-inch"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Resolution", "type": "select", "options": ["1080p", "4K", "8K"], "isRequired": true, "isFilterable": true, "isVariantKey": false },
-      { "name": "Display Technology", "type": "select", "options": ["LED", "OLED", "QLED"], "isRequired": false, "isFilterable": true, "isVariantKey": false }
+      {
+        "name": "OLED TVs",
+        "slug": "oled-tvs"
+      }
+    ]
+  },
+  {
+    "name": "Audio",
+    "slug": "audio",
+    "description": "High-fidelity sound systems and headphones",
+    "image": {
+      "url": "https://s7d2.scene7.com/is/image/bose/QC_Headphones_Black_Hero_RGB?wid=1000",
+      "altText": "Audio"
+    },
+    "icon": "Headphones",
+    "subcategories": [
+      {
+        "name": "Headphones",
+        "slug": "headphones"
+      },
+      {
+        "name": "Speakers",
+        "slug": "speakers"
+      }
+    ]
+  },
+  {
+    "name": "Cameras & Photography",
+    "slug": "cameras-photography",
+    "description": "Capture the moment in stunning clarity",
+    "image": {
+      "url": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000",
+      "altText": "Cameras"
+    },
+    "icon": "Camera",
+    "subcategories": [
+      {
+        "name": "Digital Cameras",
+        "slug": "digital-cameras"
+      }
+    ]
+  },
+  {
+    "name": "Gaming",
+    "slug": "gaming",
+    "description": "Next-gen consoles and gaming gear",
+    "image": {
+      "url": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&q=80&w=1000",
+      "altText": "Gaming"
+    },
+    "icon": "Gamepad",
+    "subcategories": [
+      {
+        "name": "Consoles",
+        "slug": "consoles"
+      }
+    ]
+  },
+  {
+    "name": "Smart Home",
+    "slug": "smart-home",
+    "description": "Intelligent devices for modern living",
+    "image": {
+      "url": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&q=80&w=1000",
+      "altText": "Smart Home"
+    },
+    "icon": "Home",
+    "subcategories": [
+      {
+        "name": "Security",
+        "slug": "security"
+      }
+    ]
+  },
+  {
+    "name": "Home Appliances",
+    "slug": "home-appliances",
+    "description": "Premium appliances for everyday ease",
+    "image": {
+      "url": "https://dyson-h.assetsadobe2.com/is/image/content/dam/dyson/images/products/primary/369363-01.png?$responsive$&cropPathE=desktop&fit=stretch,1&wid=1920",
+      "altText": "Home Appliances"
+    },
+    "icon": "Microwave",
+    "subcategories": [
+      {
+        "name": "Vacuums",
+        "slug": "vacuums"
+      }
+    ]
+  },
+  {
+    "name": "Kitchen Appliances",
+    "slug": "kitchen-appliances",
+    "description": "Professional grade kitchen tools",
+    "image": {
+      "url": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1000",
+      "altText": "Kitchen Appliances"
+    },
+    "icon": "Coffee",
+    "subcategories": [
+      {
+        "name": "Coffee Makers",
+        "slug": "coffee-makers"
+      }
     ]
   },
   {
     "name": "Fashion",
     "slug": "fashion",
+    "description": "Premium apparel and footwear",
     "image": {
-      "url": "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Fashion and Clothing"
+      "url": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoes-rWtqPn.png",
+      "altText": "Fashion"
     },
+    "icon": "Shirt",
     "subcategories": [
-      { "name": "Men's Clothing", "slug": "mens-clothing" },
-      { "name": "Women's Clothing", "slug": "womens-clothing" },
-      { "name": "Kids' Clothing", "slug": "kids-clothing" }
-    ],
-    "attributes": [
-      { "name": "Size", "type": "multiselect", "options": ["XS", "S", "M", "L", "XL", "XXL", "30", "32", "34", "36"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Color", "type": "color", "options": ["Black", "White", "Blue", "Red", "Grey", "Green", "Yellow", "Pink"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Material", "type": "select", "options": ["Cotton", "Leather", "Polyester", "Denim", "Silk", "Wool"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Fit", "type": "select", "options": ["Slim", "Regular", "Loose", "Original"], "isRequired": false, "isFilterable": true, "isVariantKey": false }
-    ]
-  },
-  {
-    "name": "Footwear",
-    "slug": "footwear",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Footwear and Sneakers"
-    },
-    "subcategories": [
-      { "name": "Running Shoes", "slug": "running-shoes" },
-      { "name": "Casual Shoes", "slug": "casual-shoes" },
-      { "name": "Formal Shoes", "slug": "formal-shoes" }
-    ],
-    "attributes": [
-      { "name": "Size", "type": "multiselect", "options": ["UK 6", "UK 7", "UK 8", "UK 9", "UK 10", "UK 11", "UK 12"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Color", "type": "color", "options": ["Black", "White", "Blue", "Red", "Grey", "Brown"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Material", "type": "select", "options": ["Leather", "Mesh", "Synthetic", "Canvas"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Occasion", "type": "select", "options": ["Sports", "Casual", "Formal", "Party"], "isRequired": false, "isFilterable": true, "isVariantKey": false }
-    ]
-  },
-  {
-    "name": "Beauty & Personal Care",
-    "slug": "beauty",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Beauty and Skincare"
-    },
-    "subcategories": [
-      { "name": "Skincare", "slug": "skincare" },
-      { "name": "Haircare", "slug": "haircare" },
-      { "name": "Makeup", "slug": "makeup" },
-      { "name": "Fragrances", "slug": "fragrances" }
-    ],
-    "attributes": [
-      { "name": "Volume", "type": "select", "options": ["30ml", "50ml", "100ml", "200ml", "500ml"], "isRequired": false, "isFilterable": true, "isVariantKey": true },
-      { "name": "Skin Type", "type": "select", "options": ["All", "Oily", "Dry", "Combination", "Sensitive"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Ingredients", "type": "text", "isRequired": false, "isFilterable": false, "isVariantKey": false }
-    ]
-  },
-  {
-    "name": "Home & Furniture",
-    "slug": "furniture",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Home Furniture and Sofa"
-    },
-    "subcategories": [
-      { "name": "Sofas", "slug": "sofas" },
-      { "name": "Chairs", "slug": "chairs" },
-      { "name": "Desks", "slug": "desks" }
-    ],
-    "attributes": [
-      { "name": "Size", "type": "select", "options": ["Standard", "Large", "Small", "Size A", "Size B", "Size C"], "isRequired": false, "isFilterable": true, "isVariantKey": true },
-      { "name": "Material", "type": "select", "options": ["Wood", "Metal", "Mesh", "Leather", "Fabric"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Color", "type": "color", "options": ["Black", "Graphite", "White", "Brown", "Grey", "Beige"], "isRequired": false, "isFilterable": true, "isVariantKey": true },
-      { "name": "Dimensions", "type": "text", "isRequired": false, "isFilterable": false, "isVariantKey": false }
-    ]
-  },
-  {
-    "name": "Home Appliances",
-    "slug": "appliances",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Home Appliances"
-    },
-    "subcategories": [
-      { "name": "Washing Machines", "slug": "washing-machines" },
-      { "name": "Refrigerators", "slug": "refrigerators" },
-      { "name": "Air Conditioners", "slug": "acs" },
-      { "name": "Vacuum Cleaners", "slug": "vacuums" }
-    ],
-    "attributes": [
-      { "name": "Capacity", "type": "select", "options": ["6kg", "7kg", "8kg", "10kg", "250L", "350L", "500L"], "isRequired": false, "isFilterable": true, "isVariantKey": true },
-      { "name": "Energy Rating", "type": "select", "options": ["3 Star", "4 Star", "5 Star"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Color", "type": "color", "options": ["White", "Silver", "Black", "Grey"], "isRequired": false, "isFilterable": true, "isVariantKey": true }
-    ]
-  },
-  {
-    "name": "Books & Stationery",
-    "slug": "books",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Books and Stationery"
-    },
-    "subcategories": [
-      { "name": "Fiction", "slug": "fiction" },
-      { "name": "Non-Fiction", "slug": "non-fiction" },
-      { "name": "Children's Books", "slug": "childrens" }
-    ],
-    "attributes": [
-      { "name": "Format", "type": "select", "options": ["Hardcover", "Paperback", "Kindle Edition"], "isRequired": true, "isFilterable": true, "isVariantKey": true },
-      { "name": "Author", "type": "text", "isRequired": true, "isFilterable": true, "isVariantKey": false },
-      { "name": "Language", "type": "select", "options": ["English", "Spanish", "French", "German"], "isRequired": true, "isFilterable": true, "isVariantKey": false },
-      { "name": "Pages", "type": "number", "isRequired": false, "isFilterable": false, "isVariantKey": false }
-    ]
-  },
-  {
-    "name": "Toys & Games",
-    "slug": "toys",
-    "image": {
-      "url": "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=1000",
-      "altText": "Toys and Games"
-    },
-    "subcategories": [
-      { "name": "Educational Toys", "slug": "educational" },
-      { "name": "Board Games", "slug": "board-games" },
-      { "name": "Building Sets", "slug": "building-sets" }
-    ],
-    "attributes": [
-      { "name": "Age Group", "type": "select", "options": ["0-2 Years", "3-5 Years", "6-8 Years", "9-12 Years", "Teens", "Adults"], "isRequired": true, "isFilterable": true, "isVariantKey": false },
-      { "name": "Material", "type": "select", "options": ["Plastic", "Wood", "Metal", "Fabric"], "isRequired": false, "isFilterable": true, "isVariantKey": false },
-      { "name": "Theme", "type": "text", "isRequired": false, "isFilterable": true, "isVariantKey": false }
+      {
+        "name": "Shoes",
+        "slug": "shoes"
+      }
     ]
   }
 ]

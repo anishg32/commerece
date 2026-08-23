@@ -16,8 +16,10 @@ const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI as string);
     console.log("MongoDB Connected...");
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error((err instanceof Error ? err.message : String(err)));
+    }
     process.exit(1);
   }
 };
@@ -58,29 +60,36 @@ const seedData = async () => {
       taxRate: 0.18,
       freeShippingThreshold: 500,
       shippingRate: 50,
-      currency: "INR"
+      currency: "INR",
+      brandDescription: "Premium e-commerce destination for high-quality products and an exceptional shopping experience.",
+      socialLinks: {
+        facebook: "https://facebook.com/luxe",
+        instagram: "https://instagram.com/luxe",
+        twitter: "https://twitter.com/luxe",
+        youtube: "https://youtube.com/luxe"
+      }
     });
 
     // 1. Brands
     const brandsData = loadJSON("brands.json");
     const brands = await Brand.insertMany(brandsData);
-    const brandMap = brands.reduce((acc: any, b: any) => { acc[b.slug] = b._id; return acc; }, {});
+    const brandMap = brands.reduce<Record<string, mongoose.Types.ObjectId>>((acc, b) => { acc[b.slug] = b._id; return acc; }, {});
     console.log(`Inserted ${brands.length} brands.`);
 
     // 2. Categories
     const categoriesData = loadJSON("categories.json");
     const categories = await Category.insertMany(categoriesData);
-    const catMap = categories.reduce((acc: any, cat: any) => { acc[cat.slug] = cat._id; return acc; }, {});
+    const catMap = categories.reduce<Record<string, mongoose.Types.ObjectId>>((acc, cat) => { acc[cat.slug] = cat._id; return acc; }, {});
     console.log(`Inserted ${categories.length} categories.`);
 
     // 3. Products
     const productsData = loadJSON("products.json");
     
     // Process products to map slugs to ObjectIds and add strict authenticity fields
-    const processedProducts = productsData.map((p: any) => {
+    const processedProducts = productsData.map((p: Record<string, unknown>) => {
       // Map ObjectIds
-      p.category = catMap[p.categorySlug];
-      p.brand = brandMap[p.brandSlug];
+      p.category = catMap[p.categorySlug as string];
+      p.brand = brandMap[p.brandSlug as string];
       
       // We must map subcategory slug to the actual name if needed, but the schema takes a string. 
       // Usually it's better to store just the slug or name. The current schema expects a string.

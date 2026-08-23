@@ -66,8 +66,8 @@ export function ImageUploader({
         );
 
         onChange([...images, ...newImages]);
-      } catch (error: any) {
-        alert(error.message || "Failed to upload images");
+      } catch (error: unknown) {
+        alert(error instanceof Error ? (error instanceof Error ? error.message : String(error)) : "Failed to upload images");
       } finally {
         setUploading(false);
       }

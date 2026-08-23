@@ -9,8 +9,8 @@ export async function GET() {
     await dbConnect();
     const settings = await (SiteSettings as any).getSettings();
     return NextResponse.json(settings);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -33,7 +33,7 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json(settings);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

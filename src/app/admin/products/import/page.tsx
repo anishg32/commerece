@@ -28,8 +28,8 @@ export default function ImportProductsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setResult(data);
-    } catch (error: any) {
-      alert(error.message || "Import failed");
+    } catch (error: unknown) {
+      alert((error instanceof Error ? error.message : String(error)) || "Import failed");
     } finally {
       setImporting(false);
     }

@@ -31,7 +31,7 @@ export async function GET(req: Request) {
       page,
       pages: Math.ceil(total / limit)
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

@@ -121,7 +121,7 @@ export const authOptions: NextAuthOptions = {
         } else {
           // Credentials login
           token.id = user.id;
-          token.role = (user as any).role;
+          token.role = (user as import("next-auth").User).role;
         }
       }
       return token;

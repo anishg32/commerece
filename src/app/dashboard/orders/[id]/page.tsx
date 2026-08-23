@@ -55,8 +55,8 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
       if (!res.ok) throw new Error(data.error);
       alert(`Order successfully ${action === 'cancel' ? 'cancelled' : 'marked for return'}`);
       fetchOrder();
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert((e instanceof Error ? e.message : String(e)));
     } finally {
       setActionLoading(false);
     }
@@ -117,7 +117,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                     const isCurrent = currentStepIndex === idx;
                     const Icon = ICONS[step] || Clock;
                     
-                    const historyLog = order.trackingHistory?.find((h: any) => h.status === step);
+                    const historyLog = order.trackingHistory?.find((h: Record<string, any>) => h.status === step);
 
                     return (
                       <div key={step} className="flex gap-6 relative z-10">

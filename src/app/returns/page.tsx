@@ -42,7 +42,7 @@ export default function ReturnsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-foreground">Refund Process</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Once we receive and inspect your returned item (usually within 48 hours of receipt), we will process your refund. Funds will be returned to your original payment method within 5-7 business days, depending on your bank's processing time.
+              Once we receive and inspect your returned item (usually within 48 hours of receipt), we will process your refund. Funds will be returned to your original payment method within 5-7 business days, depending on your bank&apos;s processing time.
             </p>
           </section>
 

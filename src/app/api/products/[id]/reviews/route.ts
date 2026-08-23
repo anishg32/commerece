@@ -79,10 +79,10 @@ export async function POST(
     });
 
     return NextResponse.json(review, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating review:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to submit review" },
+      { error: (error instanceof Error ? error.message : String(error)) || "Failed to submit review" },
       { status: 500 }
     );
   }

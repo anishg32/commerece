@@ -80,8 +80,8 @@ export async function POST(req: Request) {
     await checkoutSession.save();
 
     return NextResponse.json({ orderId: newOrder.orderId, success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Payment Verification Error:", error);
-    return NextResponse.json({ message: error.message || "Payment verification failed" }, { status: 500 });
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) || "Payment verification failed" }, { status: 500 });
   }
 }

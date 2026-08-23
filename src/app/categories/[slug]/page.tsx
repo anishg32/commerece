@@ -28,7 +28,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
     fetch("/api/categories")
       .then(r => r.json())
       .then(cats => {
-        const cat = cats.find((c: any) => c.slug === slug);
+        const cat = cats.find((c: Record<string, any>) => c.slug === slug);
         if (cat) setCategoryInfo(cat);
       })
       .catch(console.error);

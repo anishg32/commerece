@@ -74,8 +74,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       // Refresh reviews
       const rRes = await fetch(`/api/products/${product._id}/reviews`);
       if (rRes.ok) setReviews(await rRes.json());
-    } catch (e: any) {
-      alert(e.message || "Failed to submit review");
+    } catch (e: unknown) {
+      alert((e instanceof Error ? e.message : String(e)) || "Failed to submit review");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -152,8 +152,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       }
       
       router.push(`/checkout?session_id=${data.sessionId}`);
-    } catch (e: any) {
-      alert(e.message || "Failed to initiate checkout");
+    } catch (e: unknown) {
+      alert((e instanceof Error ? e.message : String(e)) || "Failed to initiate checkout");
       setIsProcessingBuyNow(false);
     }
   };

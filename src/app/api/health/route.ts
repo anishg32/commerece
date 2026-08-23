@@ -8,9 +8,9 @@ export async function GET() {
       { status: "ok", database: "connected" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { status: "error", message: error.message },
+      { status: "error", message: (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     );
   }

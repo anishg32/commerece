@@ -8,6 +8,13 @@ export interface ISiteSettings extends Document {
   freeShippingThreshold: number;
   shippingRate: number;
   currency: string;
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    youtube?: string;
+  };
+  brandDescription?: string;
   updatedAt: Date;
 }
 
@@ -20,6 +27,13 @@ const SiteSettingsSchema: Schema = new Schema(
     freeShippingThreshold: { type: Number, default: 500 },
     shippingRate: { type: Number, default: 50 },
     currency: { type: String, default: "INR" },
+    socialLinks: {
+      facebook: { type: String, default: "" },
+      instagram: { type: String, default: "" },
+      twitter: { type: String, default: "" },
+      youtube: { type: String, default: "" },
+    },
+    brandDescription: { type: String, default: "Premium e-commerce destination for high-quality products and an exceptional shopping experience." },
   },
   { timestamps: true }
 );

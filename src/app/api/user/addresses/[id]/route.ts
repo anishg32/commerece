@@ -33,10 +33,10 @@ export async function PUT(
     );
 
     return NextResponse.json(updated);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating address:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to update address" },
+      { error: (error instanceof Error ? error.message : String(error)) || "Failed to update address" },
       { status: 500 }
     );
   }
@@ -74,7 +74,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting address:", error);
     return NextResponse.json(
       { error: "Failed to delete address" },

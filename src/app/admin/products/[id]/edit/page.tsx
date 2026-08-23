@@ -96,8 +96,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       }
 
       router.push("/admin/products");
-    } catch (error: any) {
-      alert(error.message || "Something went wrong");
+    } catch (error: unknown) {
+      alert((error instanceof Error ? error.message : String(error)) || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -105,7 +105,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   const updateField = (field: string, value: any) => setForm((f: any) => ({ ...f, [field]: value }));
 
-  const selectedCategory = categories.find((c: any) => c._id === form.category);
+  const selectedCategory = categories.find((c: Record<string, any>) => c._id === form.category);
   const inputClass = "w-full px-3 py-2 border rounded-lg bg-background text-sm outline-none focus:ring-2 focus:ring-ring";
 
   return (
@@ -136,7 +136,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <label className="text-sm font-medium">Category *</label>
               <select value={form.category} onChange={(e) => updateField("category", e.target.value)} className={inputClass}>
                 <option value="">Select</option>
-                {categories.map((c: any) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                {categories.map((c: Record<string, any>) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </div>
             {selectedCategory?.subcategories?.length > 0 && (

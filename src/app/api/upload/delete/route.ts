@@ -22,10 +22,10 @@ export async function POST(req: Request) {
     await deleteImage(publicId);
 
     return NextResponse.json({ message: "Image deleted successfully" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Delete error:", error);
     return NextResponse.json(
-      { message: error.message || "Delete failed" },
+      { message: (error instanceof Error ? error.message : String(error)) || "Delete failed" },
       { status: 500 }
     );
   }

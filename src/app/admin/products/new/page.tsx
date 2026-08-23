@@ -125,8 +125,8 @@ export default function AddProductPage() {
       }
 
       router.push("/admin/products");
-    } catch (error: any) {
-      alert(error.message || "Something went wrong");
+    } catch (error: unknown) {
+      alert((error instanceof Error ? error.message : String(error)) || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -234,7 +234,7 @@ export default function AddProductPage() {
                   className={inputClass("subcategory")}
                 >
                   <option value="">Select subcategory</option>
-                  {selectedCategory.subcategories.map((sub: any) => (
+                  {selectedCategory.subcategories.map((sub: Record<string, any>) => (
                     <option key={sub.slug} value={sub.name}>
                       {sub.name}
                     </option>

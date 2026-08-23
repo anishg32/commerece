@@ -40,8 +40,8 @@ export default function ProfilePage() {
       setSuccess("Profile updated successfully!");
       update({ name, email }); // Update next-auth session locally
       setTimeout(() => { setIsEditProfileOpen(false); setSuccess(""); }, 1500);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : String(err)));
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,8 @@ export default function ProfilePage() {
       setCurrentPassword("");
       setNewPassword("");
       setTimeout(() => { setIsChangePasswordOpen(false); setSuccess(""); }, 1500);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : String(err)));
     } finally {
       setLoading(false);
     }

@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ProductImage } from "@/components/ui/ProductImage";
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<Record<string, unknown>[]>([]);
+  const [categories, setCategories] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,11 +29,11 @@ export default function Home() {
           const catData = await catRes.json();
           // Get top 4 categories by product count, prioritizing ones with images
           const sortedCats = catData
-            .filter((c: any) => c.productCount > 0)
-            .sort((a: any, b: any) => {
+            .filter((c: Record<string, unknown>) => (c.productCount as number) > 0)
+            .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
               if (a.image && !b.image) return -1;
               if (!a.image && b.image) return 1;
-              return b.productCount - a.productCount;
+              return (b.productCount as number) - (a.productCount as number);
             })
             .slice(0, 4);
           setCategories(sortedCats);
@@ -128,17 +128,17 @@ export default function Home() {
               <div className="col-span-full py-12 text-center text-muted-foreground">No categories available.</div>
             ) : (
               categories.map((cat) => (
-                <Link key={cat._id} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/5]">
+                <Link key={cat._id as string} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/5]">
                   <ProductImage 
-                    src={cat.image} 
-                    alt={cat.name} 
+                    src={(cat.image as any)?.url || (typeof cat.image === 'string' ? cat.image : "")} 
+                    alt={cat.name as string} 
                     fill 
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-0 left-0 p-6 w-full text-white">
-                    <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
-                    <p className="text-white/80 text-sm font-medium">{cat.productCount} Products</p>
+                    <h3 className="text-xl font-bold mb-1">{cat.name as string}</h3>
+                    <p className="text-white/80 text-sm font-medium">{cat.productCount as number} Products</p>
                   </div>
                 </Link>
               ))
@@ -174,37 +174,40 @@ export default function Home() {
             ) : featuredProducts.length === 0 ? (
               <div className="col-span-full py-12 text-center text-muted-foreground">No featured products available.</div>
             ) : (
-              featuredProducts.map((product) => (
-                <Link key={product._id} href={`/products/${product._id}`} className="group space-y-4">
+              featuredProducts.map((product) => {
+                const discountPrice = product.discountPrice as number | undefined;
+                const price = product.price as number;
+                return (
+                <Link key={product._id as string} href={`/products/${product._id}`} className="group space-y-4">
                   <div className="aspect-[3/4] bg-secondary relative overflow-hidden rounded-2xl">
                     <ProductImage 
-                      src={product.thumbnail || product.images?.[0]?.url} 
-                      alt={product.name} 
+                      src={(product.thumbnail || (product.images as any[])?.[0]?.url) as string} 
+                      alt={product.name as string} 
                       fill 
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    {product.discountPrice && (
+                    {discountPrice && (
                       <div className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
-                        {product.discountPercentage}% OFF
+                        {product.discountPercentage as number}% OFF
                       </div>
                     )}
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
-                      {product.brand || 'Luxe'}
+                      {(product.brand as string) || 'Luxe'}
                     </div>
                     <h3 className="font-semibold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">
-                      {product.name}
+                      {product.name as string}
                     </h3>
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="font-bold">₹{(product.discountPrice || product.price).toLocaleString()}</span>
-                      {product.discountPrice && (
-                        <span className="text-muted-foreground line-through text-sm">₹{product.price.toLocaleString()}</span>
+                      <span className="font-bold">₹{(discountPrice || price).toLocaleString()}</span>
+                      {discountPrice && (
+                        <span className="text-muted-foreground line-through text-sm">₹{price.toLocaleString()}</span>
                       )}
                     </div>
                   </div>
                 </Link>
-              ))
+              )})
             )}
           </div>
         </div>

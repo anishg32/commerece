@@ -20,16 +20,16 @@ export async function GET() {
       { $match: { isActive: true, isDeleted: { $ne: true } } },
       { $group: { _id: "$category", count: { $sum: 1 } } },
     ]);
-    const countMap = new Map(counts.map((c: any) => [c._id.toString(), c.count]));
+    const countMap = new Map(counts.map((c: Record<string, any>) => [c._id.toString(), c.count]));
 
-    const categoriesWithCounts = categories.map((cat: any) => ({
+    const categoriesWithCounts = categories.map((cat: Record<string, any>) => ({
       ...cat,
       productCount: countMap.get(cat._id.toString()) || 0,
     }));
 
     return NextResponse.json(categoriesWithCounts);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
     // Generate subcategory slugs
     if (data.subcategories) {
-      data.subcategories = data.subcategories.map((sub: any) => ({
+      data.subcategories = data.subcategories.map((sub: Record<string, any>) => ({
         ...sub,
         slug: sub.slug || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       }));
@@ -61,11 +61,11 @@ export async function POST(req: Request) {
 
     const category = await Category.create(data);
     return NextResponse.json(category, { status: 201 });
-  } catch (error: any) {
-    if (error.code === 11000) {
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
       return NextResponse.json({ message: "Category slug already exists" }, { status: 400 });
     }
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -86,7 +86,7 @@ export async function PUT(req: Request) {
 
     // Generate subcategory slugs
     if (updateData.subcategories) {
-      updateData.subcategories = updateData.subcategories.map((sub: any) => ({
+      updateData.subcategories = updateData.subcategories.map((sub: Record<string, any>) => ({
         ...sub,
         slug: sub.slug || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       }));
@@ -102,8 +102,8 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json(category);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -133,7 +133,7 @@ export async function DELETE(req: Request) {
 
     await Category.findByIdAndDelete(id);
     return NextResponse.json({ message: "Category deleted" });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

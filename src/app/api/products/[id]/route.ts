@@ -18,8 +18,8 @@ export async function GET(
     }
     
     return NextResponse.json(product);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -47,8 +47,8 @@ export async function PUT(
     }
     
     return NextResponse.json(product);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -71,7 +71,7 @@ export async function DELETE(
     }
     
     return NextResponse.json({ message: "Product deleted successfully" });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

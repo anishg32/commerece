@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const category = searchParams.get("category") || "";
     const status = searchParams.get("status"); // "active", "inactive", "all"
 
-    const query: any = { isDeleted: { $ne: true } };
+    const query: Record<string, any> = { isDeleted: { $ne: true } };
 
     if (search) {
       query.$or = [
@@ -53,8 +53,8 @@ export async function GET(req: Request) {
       page,
       pages: Math.ceil(total / limit),
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }
 
@@ -107,13 +107,10 @@ export async function POST(req: Request) {
 
     const product = await Product.create(data);
     return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { message: "A product with this SKU or slug already exists" },
-        { status: 400 }
-      );
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 11000) {
+      return NextResponse.json({ message: "Product slug or SKU already exists" }, { status: 400 });
     }
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

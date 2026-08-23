@@ -36,10 +36,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ images: uploadResults }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { message: error.message || "Upload failed" },
+      { message: (error instanceof Error ? error.message : String(error)) || "Upload failed" },
       { status: 500 }
     );
   }

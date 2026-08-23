@@ -36,7 +36,7 @@ export default function AdminCategoriesPage() {
       });
       if (res.ok) { setShowForm(false); setEditing(null); setForm({ name: "", description: "", image: "", subcategories: "" }); fetchCategories(); }
       else { const d = await res.json(); alert(d.message); }
-    } catch (e: any) { alert(e.message); }
+    } catch (e: unknown) { alert((e instanceof Error ? e.message : String(e))); }
   };
 
   const deleteCategory = async (id: string) => {
@@ -45,10 +45,10 @@ export default function AdminCategoriesPage() {
       const res = await fetch(`/api/admin/categories?id=${id}`, { method: "DELETE" });
       if (res.ok) fetchCategories();
       else { const d = await res.json(); alert(d.message); }
-    } catch (e: any) { alert(e.message); }
+    } catch (e: unknown) { alert((e instanceof Error ? e.message : String(e))); }
   };
 
-  const toggleActive = async (cat: any) => {
+  const toggleActive = async (cat: Record<string, any>) => {
     try {
       await fetch("/api/admin/categories", {
         method: "PUT",
@@ -59,7 +59,7 @@ export default function AdminCategoriesPage() {
     } catch (e) { console.error(e); }
   };
 
-  const editCategory = (cat: any) => {
+  const editCategory = (cat: Record<string, any>) => {
     setEditing(cat);
     setForm({
       name: cat.name,
@@ -143,7 +143,7 @@ export default function AdminCategoriesPage() {
               </div>
               {expanded.includes(cat._id) && cat.subcategories?.length > 0 && (
                 <div className="pl-12 pb-3 space-y-1">
-                  {cat.subcategories.map((sub: any) => (
+                  {cat.subcategories.map((sub: Record<string, any>) => (
                     <div key={sub.slug} className="text-sm text-muted-foreground py-1 px-3 bg-secondary/30 rounded">{sub.name}</div>
                   ))}
                 </div>

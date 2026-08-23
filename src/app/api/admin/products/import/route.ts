@@ -28,12 +28,12 @@ export async function POST(req: Request) {
       transformHeader: (h: string) => h.trim(),
     });
 
-    const validRows: any[] = [];
+    const validRows: Record<string, any>[] = [];
     const invalidRows: { row: number; errors: string[]; data: any }[] = [];
 
     // Check for existing SKUs
-    const allSkus = parsed.data
-      .map((row: any) => row.SKU || row.sku)
+    const allSkus = (parsed.data as Record<string, unknown>[])
+      .map((row) => (row.SKU as string) || (row.sku as string))
       .filter(Boolean);
     const existingProducts = await Product.find({
       sku: { $in: allSkus },
@@ -41,14 +41,14 @@ export async function POST(req: Request) {
     const existingSkuSet = new Set(existingProducts.map((p) => p.sku));
 
     for (let i = 0; i < parsed.data.length; i++) {
-      const row: any = parsed.data[i];
+      const row = parsed.data[i] as Record<string, unknown>;
       const errors: string[] = [];
 
-      const name = row.Name || row.name || "";
-      const sku = row.SKU || row.sku || "";
-      const price = parseFloat(row.Price || row.price || "0");
-      const stock = parseInt(row.Stock || row.stock || "0");
-      const category = row.Category || row.category || "";
+      const name = (row.Name as string) || (row.name as string) || "";
+      const sku = (row.SKU as string) || (row.sku as string) || "";
+      const price = parseFloat((row.Price as string) || (row.price as string) || "0");
+      const stock = parseInt((row.Stock as string) || (row.stock as string) || "0");
+      const category = (row.Category as string) || (row.category as string) || "";
 
       if (!name.trim()) errors.push("Name is required");
       if (!sku.trim()) errors.push("SKU is required");
@@ -71,18 +71,18 @@ export async function POST(req: Request) {
         validRows.push({
           name: name.trim(),
           slug: `${slug}-${Date.now()}-${i}`,
-          brand: (row.Brand || row.brand || "").trim(),
-          description: (row.Description || row.description || name).trim(),
-          shortDescription: (row["Short Description"] || row.shortDescription || "").trim(),
+          brand: ((row.Brand as string) || (row.brand as string) || "").trim(),
+          description: ((row.Description as string) || (row.description as string) || name).trim(),
+          shortDescription: ((row["Short Description"] as string) || (row.shortDescription as string) || "").trim(),
           price,
-          discountPrice: parseFloat(row["Discount Price"] || row.discountPrice || "0") || undefined,
+          discountPrice: parseFloat((row["Discount Price"] as string) || (row.discountPrice as string) || "0") || undefined,
           sku: sku.trim(),
           stock,
-          images: (row["Image URLs"] || row.images || row.imageUrls || "")
+          images: ((row["Image URLs"] as string) || (row.images as string) || (row.imageUrls as string) || "")
             .split(",")
             .map((s: string) => s.trim())
             .filter(Boolean),
-          tags: (row.Tags || row.tags || "")
+          tags: ((row.Tags as string) || (row.tags as string) || "")
             .split(",")
             .map((s: string) => s.trim())
             .filter(Boolean),
@@ -100,10 +100,10 @@ export async function POST(req: Request) {
       name: { $in: categoryNames.map((n) => new RegExp(`^${n}$`, "i")) },
     });
     const categoryMap = new Map(
-      categories.map((c: any) => [c.name.toLowerCase(), c._id])
+      categories.map((c: Record<string, any>) => [c.name.toLowerCase(), c._id])
     );
 
-    const finalValidRows: any[] = [];
+    const finalValidRows: Record<string, any>[] = [];
     for (const row of validRows) {
       const catId = categoryMap.get(row._categoryName.toLowerCase());
       if (!catId) {
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       invalidRows: invalidRows.slice(0, 50), // Limit response size
       total: parsed.data.length,
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

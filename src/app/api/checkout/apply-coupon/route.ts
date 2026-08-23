@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       discountAmount,
       description: coupon.description
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error applying coupon:", error);
     return NextResponse.json(
       { error: "Failed to apply coupon" },

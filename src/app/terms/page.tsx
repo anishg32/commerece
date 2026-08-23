@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 
 export default function TermsPage() {
   return (
@@ -8,7 +8,7 @@ export default function TermsPage() {
         <p className="text-sm text-muted-foreground mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
         
         <p className="lead text-lg text-muted-foreground mb-8">
-          Welcome to LUXE. These Terms and Conditions outline the rules and regulations for the use of LUXE's Website, located at luxe.com.
+          Welcome to LUXE. These Terms and Conditions outline the rules and regulations for the use of LUXE&apos;s Website, located at luxe.com.
         </p>
 
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">1. Acceptance of Terms</h2>

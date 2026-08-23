@@ -20,7 +20,9 @@ export function ProductImage({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  if (!src || hasError) {
+  const isInvalidSrc = !src || (typeof src === 'string' && src.trim() === '');
+
+  if (isInvalidSrc || hasError) {
     return (
       <div
         className={`flex flex-col items-center justify-center bg-secondary text-muted-foreground ${fallbackClassName || className}`}

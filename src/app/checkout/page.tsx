@@ -40,7 +40,7 @@ function CheckoutContent() {
         if (data.message) throw new Error(data.message);
         setSessionData(data);
       })
-      .catch(e => setError(e.message))
+      .catch(e => setError((e instanceof Error ? e.message : String(e))))
       .finally(() => setLoading(false));
 
     // Fetch saved addresses if logged in
@@ -88,8 +88,8 @@ function CheckoutContent() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
         router.push(`/orders/confirmation?id=${data.orderId}`);
-      } catch (e: any) {
-        alert(e.message);
+      } catch (e: unknown) {
+        alert((e instanceof Error ? e.message : String(e)));
         setProcessing(false);
       }
       return;
@@ -137,8 +137,8 @@ function CheckoutContent() {
             const verifyData = await verifyRes.json();
             if (!verifyRes.ok) throw new Error(verifyData.message);
             router.push(`/orders/confirmation?id=${verifyData.orderId}`);
-          } catch (e: any) {
-            alert(e.message || "Payment verification failed");
+          } catch (e: unknown) {
+            alert((e instanceof Error ? e.message : String(e)) || "Payment verification failed");
             router.push(`/orders/failed?session_id=${sessionId}`);
           }
         },
@@ -155,8 +155,8 @@ function CheckoutContent() {
         router.push(`/orders/failed?session_id=${sessionId}`);
       });
       paymentObject.open();
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert((e instanceof Error ? e.message : String(e)));
     } finally {
       setProcessing(false);
     }
