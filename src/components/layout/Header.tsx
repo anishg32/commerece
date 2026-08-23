@@ -15,6 +15,10 @@ export function Header() {
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [showMegaMenu, setShowMegaMenu] = useState(false);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
+  const categoriesLinkRef = useRef<HTMLButtonElement>(null);
   
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,6 +27,22 @@ export function Header() {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Fetch Categories for Mega Menu
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch categories", e);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   // Handle scroll effect for glassmorphism
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -30,11 +50,20 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle search click outside
+  // Handle click outside for dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (searchRef.current && !searchRef.current.contains(target)) {
         setShowSearchDropdown(false);
+      }
+      if (
+        megaMenuRef.current && 
+        categoriesLinkRef.current &&
+        !megaMenuRef.current.contains(target) && 
+        !categoriesLinkRef.current.contains(target)
+      ) {
+        setShowMegaMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -74,7 +103,7 @@ export function Header() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           
           {/* Mobile Menu Button & Logo */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-1">
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
               <Menu className="w-5 h-5" />
             </Button>
@@ -84,14 +113,62 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <nav className="hidden md:flex items-center justify-center gap-8 text-sm font-medium">
             <Link href="/products" className="hover:text-primary transition-colors">Shop</Link>
-            <Link href="/categories" className="hover:text-primary transition-colors">Categories</Link>
+            
+            <div className="relative">
+              <button 
+                ref={categoriesLinkRef}
+                onClick={() => setShowMegaMenu(!showMegaMenu)}
+                className={`flex items-center gap-1 hover:text-primary transition-colors ${showMegaMenu ? 'text-primary' : ''}`}
+              >
+                Categories
+              </button>
+              
+              {/* Mega Menu Panel */}
+              {showMegaMenu && (
+                <div 
+                  ref={megaMenuRef}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[800px] bg-card border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 p-8 grid grid-cols-3 gap-8 z-50"
+                  onClick={() => setShowMegaMenu(false)}
+                >
+                  {categories.length > 0 ? categories.map((cat: any) => (
+                    <div key={cat._id} className="flex flex-col gap-3">
+                      <Link href={`/category/${cat.slug}`} className="font-bold text-base hover:text-primary transition-colors">
+                        {cat.name}
+                      </Link>
+                      <div className="flex flex-col gap-2">
+                        {cat.subcategories?.map((sub: any) => (
+                          <Link 
+                            key={sub.slug} 
+                            href={`/products?category=${cat.slug}&subcategory=${sub.slug}`}
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="col-span-3 text-center py-8 text-muted-foreground">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                      Loading categories...
+                    </div>
+                  )}
+                  <div className="col-span-3 pt-4 border-t mt-2">
+                    <Link href="/categories" className="text-primary font-medium hover:underline text-sm flex items-center justify-center">
+                      View All 40+ Categories &rarr;
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Link href="/offers" className="hover:text-primary transition-colors text-orange-500">Offers</Link>
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center justify-end gap-2 md:gap-4 flex-1">
             
             {/* Search Bar */}
             <div className="hidden md:block relative group" ref={searchRef}>
@@ -121,7 +198,7 @@ export function Header() {
                           className="flex items-center gap-3 px-4 py-2 hover:bg-secondary transition-colors"
                         >
                           <div className="w-10 h-10 bg-secondary rounded overflow-hidden shrink-0">
-                            <img src={product.thumbnail || product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                            <img src={product.thumbnail || product.images?.[0]?.url || ""} alt={product.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium truncate">{product.name}</div>

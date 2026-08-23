@@ -1,0 +1,292 @@
+[
+  {
+    "name": "Apple iPhone 15 Pro",
+    "slug": "apple-iphone-15-pro",
+    "description": "Forged in titanium and featuring the groundbreaking A17 Pro chip.",
+    "categorySlug": "electronics",
+    "subcategorySlug": "smartphones",
+    "brandSlug": "apple",
+    "price": 134900,
+    "stock": 50,
+    "sku": "APP-IP15P",
+    "attributes": { "Storage": "128GB", "Color": "Natural Titanium", "Processor": "A17 Pro", "Display": "6.1-inch Super Retina XDR" },
+    "images": [
+      {
+        "url": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1692875994111",
+        "thumbnailUrl": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=512&hei=288",
+        "altText": "Apple iPhone 15 Pro Natural Titanium Front View",
+        "source": "https://www.apple.com/in/iphone-15-pro/",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=512&hei=288",
+    "variants": [
+      { "attributes": { "Storage": "128GB", "Color": "Natural Titanium" }, "sku": "APP-IP15P-128-NAT", "stock": 15, "price": 134900 },
+      { "attributes": { "Storage": "256GB", "Color": "Natural Titanium" }, "sku": "APP-IP15P-256-NAT", "stock": 20, "price": 144900 }
+    ],
+    "isFeatured": true,
+    "isBestseller": true,
+    "source": "https://www.apple.com/in/iphone-15-pro/"
+  },
+  {
+    "name": "Dell XPS 15",
+    "slug": "dell-xps-15",
+    "description": "The perfect balance of power and portability.",
+    "categorySlug": "computers",
+    "subcategorySlug": "windows-laptops",
+    "brandSlug": "dell",
+    "price": 185000,
+    "stock": 25,
+    "sku": "DELL-XPS15",
+    "attributes": { "Storage": "512GB", "RAM": "16GB", "Processor": "Intel Core i7 13th Gen", "Screen Size": "15-inch", "GPU": "NVIDIA RTX 4050" },
+    "images": [
+      {
+        "url": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/15-9530/media-gallery/silver/notebook-xps-15-9530-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=402&wid=537&qlt=100,1&resMode=sharp2&size=537,402&chrss=full",
+        "altText": "Dell XPS 15 Silver",
+        "source": "https://www.dell.com/en-in/shop/laptops-2-in-1-pcs/xps-15-laptop/spd/xps-15-9530-laptop",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/15-9530/media-gallery/silver/notebook-xps-15-9530-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=402&wid=537&qlt=100,1&resMode=sharp2&size=537,402&chrss=full",
+    "variants": [
+      { "attributes": { "Storage": "512GB", "RAM": "16GB", "Screen Size": "15-inch" }, "sku": "DELL-XPS15-16-512", "stock": 15, "price": 185000 },
+      { "attributes": { "Storage": "1TB", "RAM": "32GB", "Screen Size": "15-inch" }, "sku": "DELL-XPS15-32-1TB", "stock": 10, "price": 225000 }
+    ],
+    "isFeatured": true,
+    "source": "https://www.dell.com/en-in/shop/laptops-2-in-1-pcs/xps-15-laptop/spd/xps-15-9530-laptop"
+  },
+  {
+    "name": "LG C3 65-inch OLED TV",
+    "slug": "lg-c3-65-oled",
+    "description": "Experience the brilliance of self-lit OLED pixels.",
+    "categorySlug": "tvs",
+    "subcategorySlug": "oled-tvs",
+    "brandSlug": "lg",
+    "price": 219990,
+    "discountPrice": 179990,
+    "stock": 15,
+    "sku": "LG-C3-65",
+    "attributes": { "Screen Size": "65-inch", "Resolution": "4K", "Display Technology": "OLED" },
+    "images": [
+      {
+        "url": "https://www.lg.com/content/dam/channel/wcms/in/images/tvs/oled65c3psa_atr_eail_in_c/gallery/OLED65C3PSA-DZ-01-v1.jpg",
+        "altText": "LG C3 65-inch OLED TV",
+        "source": "https://www.lg.com/in/tvs/lg-oled65c3psa",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://www.lg.com/content/dam/channel/wcms/in/images/tvs/oled65c3psa_atr_eail_in_c/gallery/OLED65C3PSA-DZ-01-v1.jpg",
+    "variants": [
+      { "attributes": { "Screen Size": "65-inch" }, "sku": "LG-C3-65", "stock": 15, "price": 179990 }
+    ],
+    "isBestseller": true,
+    "source": "https://www.lg.com/in/tvs/lg-oled65c3psa"
+  },
+  {
+    "name": "Levi's Men's 501 Original Fit Jeans",
+    "slug": "levis-501-original-fit-jeans",
+    "description": "The original straight fit jeans.",
+    "categorySlug": "fashion",
+    "subcategorySlug": "mens-clothing",
+    "brandSlug": "levis",
+    "price": 4599,
+    "stock": 250,
+    "sku": "LEV-501-ORG",
+    "attributes": { "Color": "Blue", "Material": "Denim", "Fit": "Original" },
+    "images": [
+      {
+        "url": "https://lsco.scene7.com/is/image/lsco/005010193-dynamic1-pdp?fmt=jpeg&qlt=70,1&op_sharpen=0&resMode=sharp2&op_usm=0.8,1,10,0&fit=crop,0&wid=450&hei=600",
+        "altText": "Levi's Men's 501 Original Fit Jeans Blue Front",
+        "source": "https://www.levi.in/men/clothing/jeans/501",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://lsco.scene7.com/is/image/lsco/005010193-dynamic1-pdp?fmt=jpeg&qlt=70,1&op_sharpen=0&resMode=sharp2&op_usm=0.8,1,10,0&fit=crop,0&wid=450&hei=600",
+    "variants": [
+      { "attributes": { "Size": "30", "Color": "Blue" }, "sku": "LEV-501-30", "stock": 50 },
+      { "attributes": { "Size": "32", "Color": "Blue" }, "sku": "LEV-501-32", "stock": 100 },
+      { "attributes": { "Size": "34", "Color": "Blue" }, "sku": "LEV-501-34", "stock": 100 }
+    ],
+    "isBestseller": true,
+    "source": "https://www.levi.in/men/clothing/jeans/501"
+  },
+  {
+    "name": "Nike Air Force 1 '07",
+    "slug": "nike-air-force-1-07",
+    "description": "The radiance lives on in the Nike Air Force 1 '07.",
+    "categorySlug": "footwear",
+    "subcategorySlug": "casual-shoes",
+    "brandSlug": "nike",
+    "price": 7495,
+    "stock": 85,
+    "sku": "NKE-AF1-07",
+    "attributes": { "Color": "White", "Material": "Leather", "Occasion": "Casual" },
+    "images": [
+      {
+        "url": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoes-rWtqPn.png",
+        "altText": "Nike Air Force 1 '07 White Front",
+        "source": "https://www.nike.com/in/t/air-force-1-07-shoe-rWtqPn/CW2288-111",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoes-rWtqPn.png",
+    "variants": [
+      { "attributes": { "Size": "UK 8", "Color": "White" }, "sku": "NKE-AF1-07-8", "stock": 30 },
+      { "attributes": { "Size": "UK 9", "Color": "White" }, "sku": "NKE-AF1-07-9", "stock": 30 }
+    ],
+    "isFeatured": true,
+    "source": "https://www.nike.com/in/t/air-force-1-07-shoe-rWtqPn/CW2288-111"
+  },
+  {
+    "name": "Dyson V15 Detect Absolute",
+    "slug": "dyson-v15-detect",
+    "description": "The most powerful, intelligent cordless vacuum.",
+    "categorySlug": "appliances",
+    "subcategorySlug": "vacuums",
+    "brandSlug": "dyson",
+    "price": 74900,
+    "stock": 18,
+    "sku": "DYS-V15D",
+    "attributes": { "Color": "Silver" },
+    "images": [
+      {
+        "url": "https://dyson-h.assetsadobe2.com/is/image/content/dam/dyson/images/products/primary/369372-01.png?$responsive$&fmt=png-alpha&fit=constrain,1&wid=1000",
+        "altText": "Dyson V15 Detect Absolute",
+        "source": "https://www.dyson.in/dyson-v15-detect-absolute-cord-free-vacuum",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://dyson-h.assetsadobe2.com/is/image/content/dam/dyson/images/products/primary/369372-01.png?$responsive$&fmt=png-alpha&fit=constrain,1&wid=1000",
+    "variants": [
+      { "attributes": { "Color": "Silver" }, "sku": "DYS-V15D-SLV", "stock": 18 }
+    ],
+    "isNewArrival": true,
+    "source": "https://www.dyson.in/dyson-v15-detect-absolute-cord-free-vacuum"
+  },
+  {
+    "name": "Herman Miller Aeron Chair",
+    "slug": "herman-miller-aeron-chair",
+    "description": "The benchmark for ergonomic seating.",
+    "categorySlug": "furniture",
+    "subcategorySlug": "chairs",
+    "brandSlug": "herman-miller",
+    "price": 145000,
+    "stock": 12,
+    "sku": "HM-AERON",
+    "attributes": { "Material": "Mesh", "Color": "Graphite" },
+    "images": [
+      {
+        "url": "https://s7d2.scene7.com/is/image/hermanmiller/Aeron_Chair_Graphite_Front_01?fmt=webp-alpha&wid=800",
+        "altText": "Herman Miller Aeron Chair Graphite Front",
+        "source": "https://www.hermanmiller.com/products/seating/office-chairs/aeron-chairs/",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://s7d2.scene7.com/is/image/hermanmiller/Aeron_Chair_Graphite_Front_01?fmt=webp-alpha&wid=800",
+    "variants": [
+      { "attributes": { "Size": "Size A", "Color": "Graphite" }, "sku": "HM-AERON-A", "stock": 2, "price": 145000 },
+      { "attributes": { "Size": "Size B", "Color": "Graphite" }, "sku": "HM-AERON-B", "stock": 8, "price": 145000 }
+    ],
+    "isFeatured": true,
+    "source": "https://www.hermanmiller.com/products/seating/office-chairs/aeron-chairs/"
+  },
+  {
+    "name": "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+    "slug": "atomic-habits",
+    "description": "No matter your goals, Atomic Habits offers a proven framework for improving--every day.",
+    "categorySlug": "books",
+    "subcategorySlug": "non-fiction",
+    "brandSlug": "penguin",
+    "price": 799,
+    "discountPrice": 550,
+    "stock": 500,
+    "sku": "BK-ATOMIC-HABITS",
+    "attributes": { "Format": "Paperback", "Author": "James Clear", "Language": "English", "Pages": "320" },
+    "images": [
+      {
+        "url": "https://images.penguinrandomhouse.com/cover/9780735211292",
+        "altText": "Atomic Habits Book Cover",
+        "source": "https://www.penguinrandomhouse.com/books/544955/atomic-habits-by-james-clear/",
+        "sourceType": "Official Publisher",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://images.penguinrandomhouse.com/cover/9780735211292",
+    "variants": [
+      { "attributes": { "Format": "Paperback" }, "sku": "BK-ATOMIC-HABITS-PB", "stock": 300, "price": 550 },
+      { "attributes": { "Format": "Hardcover" }, "sku": "BK-ATOMIC-HABITS-HC", "stock": 200, "price": 799 }
+    ],
+    "isBestseller": true,
+    "source": "https://www.penguinrandomhouse.com/books/544955/atomic-habits-by-james-clear/"
+  },
+  {
+    "name": "LEGO Star Wars Millennium Falcon 75192",
+    "slug": "lego-star-wars-millennium-falcon-75192",
+    "description": "Travel the LEGO galaxy in the ultimate Millennium Falcon!",
+    "categorySlug": "toys",
+    "subcategorySlug": "building-sets",
+    "brandSlug": "lego",
+    "price": 74999,
+    "stock": 5,
+    "sku": "LEGO-75192",
+    "attributes": { "Age Group": "Adults", "Material": "Plastic", "Theme": "Star Wars" },
+    "images": [
+      {
+        "url": "https://www.lego.com/cdn/cs/set/assets/blt18b48f69cc259ea8/75192.jpg?fit=bounds&format=webply&quality=80&width=1500&height=1500&dpr=1",
+        "altText": "LEGO Star Wars Millennium Falcon 75192 Front Box View",
+        "source": "https://www.lego.com/en-in/product/millennium-falcon-75192",
+        "sourceType": "Official Manufacturer",
+        "isVerified": true,
+        "verifiedAt": "2024-05-10T12:00:00Z",
+        "sortOrder": 0
+      }
+    ],
+    "thumbnail": "https://www.lego.com/cdn/cs/set/assets/blt18b48f69cc259ea8/75192.jpg?fit=bounds&format=webply&quality=80&width=1500&height=1500&dpr=1",
+    "variants": [
+      { "attributes": {}, "sku": "LEGO-75192", "stock": 5, "price": 74999 }
+    ],
+    "isFeatured": true,
+    "source": "https://www.lego.com/en-in/product/millennium-falcon-75192"
+  },
+  {
+    "name": "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
+    "slug": "sony-wh-1000xm5",
+    "description": "Industry-leading noise cancellation.",
+    "categorySlug": "electronics",
+    "subcategorySlug": "headphones",
+    "brandSlug": "sony",
+    "price": 34990,
+    "stock": 45,
+    "sku": "SONY-WH1000XM5",
+    "attributes": { "Color": "Black", "Type": "Over-Ear" },
+    "images": [],
+    "variants": [
+      { "attributes": { "Color": "Black" }, "sku": "SONY-WH1000XM5-BLK", "stock": 45, "price": 34990 }
+    ],
+    "isFeatured": true,
+    "source": "https://www.sony.co.in/electronics/headband-headphones/wh-1000xm5"
+  }
+]

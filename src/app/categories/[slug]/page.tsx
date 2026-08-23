@@ -65,7 +65,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       _id: product._id,
       name: product.name,
       price: product.discountPrice || product.price,
-      image: product.thumbnail || product.images?.[0] || "",
+      image: product.thumbnail || product.images?.[0]?.url || "",
       brand: product.brand || 'Luxe',
       stock: product.stock
     }, 1);
@@ -80,7 +80,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         _id: product._id,
         name: product.name,
         price: product.discountPrice || product.price,
-        image: product.thumbnail || product.images?.[0] || "",
+        image: product.thumbnail || product.images?.[0]?.url || "",
         brand: product.brand || 'Luxe',
         stock: product.stock
       });
@@ -151,7 +151,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 <Link key={product._id} href={`/products/${product._id}`} className="group flex flex-col">
                   <div className="aspect-[4/5] bg-secondary relative overflow-hidden rounded-2xl mb-4">
                     <ProductImage 
-                      src={product.thumbnail || product.images?.[0]} 
+                      src={product.thumbnail || product.images?.[0]?.url} 
                       alt={product.name} 
                       fill 
                       className="object-cover transition-transform duration-700 group-hover:scale-105"

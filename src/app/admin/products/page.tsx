@@ -134,8 +134,8 @@ export default function AdminProductsPage() {
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden bg-secondary shrink-0 relative">
-                          {product.images?.[0] ? (
-                            <Image src={product.images[0]} alt="" fill className="object-cover" sizes="40px" />
+                          {product.images?.[0]?.url ? (
+                            <Image src={product.images[0].url} alt="" fill className="object-cover" sizes="40px" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">N/A</div>
                           )}

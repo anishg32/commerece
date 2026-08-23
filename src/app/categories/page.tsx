@@ -40,7 +40,7 @@ export default function CategoriesPage() {
           categories.map((cat) => (
             <Link key={cat._id} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/3]">
               <ProductImage 
-                src={cat.image} 
+                src={cat.image?.url} 
                 alt={cat.name} 
                 fill 
                 className="object-cover transition-transform duration-700 group-hover:scale-105"

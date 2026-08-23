@@ -101,8 +101,8 @@ export async function POST(req: Request) {
     }
 
     // Set thumbnail to first image if not specified
-    if (!data.thumbnail && data.images?.length > 0) {
-      data.thumbnail = data.images[0];
+    if (data.images && data.images.length > 0 && data.images[0].url && !data.thumbnail) {
+      data.thumbnail = data.images[0].url;
     }
 
     const product = await Product.create(data);

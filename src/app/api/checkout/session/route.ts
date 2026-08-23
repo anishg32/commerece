@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       checkoutItems.push({
         product: product._id,
         name: product.name,
-        image: product.thumbnail || product.images?.[0] || "",
+        image: product.thumbnail || product.images?.[0]?.url || "",
         price: product.price,
         discountPrice: product.discountPrice,
         quantity,
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
         checkoutItems.push({
           product: product._id,
           name: product.name,
-          image: product.thumbnail || product.images?.[0] || "",
+          image: product.thumbnail || product.images?.[0]?.url || "",
           price: product.price,
           discountPrice: product.discountPrice,
           quantity: item.quantity,

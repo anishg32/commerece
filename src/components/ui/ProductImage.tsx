@@ -23,10 +23,11 @@ export function ProductImage({
   if (!src || hasError) {
     return (
       <div
-        className={`flex items-center justify-center bg-secondary ${fallbackClassName || className}`}
+        className={`flex flex-col items-center justify-center bg-secondary text-muted-foreground ${fallbackClassName || className}`}
         style={props.fill ? { position: "absolute", inset: 0 } : {}}
       >
-        <Package className="w-10 h-10 text-muted-foreground/30" />
+        <Package className="w-8 h-8 mb-2 opacity-50" />
+        <span className="text-xs font-medium">Image unavailable</span>
       </div>
     );
   }

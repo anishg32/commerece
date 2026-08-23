@@ -108,7 +108,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const isWishlisted = isInWishlist(product._id);
   const price = product.discountPrice || product.price;
   const isOutOfStock = product.stock <= 0;
-  const images = product.images?.length > 0 ? product.images : [product.thumbnail || ""];
+  const imageUrls = product.images?.length > 0 
+    ? product.images.map((img: any) => img.url)
+    : (product.thumbnail ? [product.thumbnail] : []);
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -116,7 +118,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       _id: product._id,
       name: product.name,
       price: price,
-      image: images[0],
+      image: imageUrls[0] || "",
       brand: product.brand || 'Luxe',
       stock: product.stock,
       variant: { color: selectedColor, size: selectedSize }
@@ -164,15 +166,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         _id: product._id,
         name: product.name,
         price: price,
-        image: images[0],
+        image: imageUrls[0] || "",
         brand: product.brand || 'Luxe',
         stock: product.stock
       });
     }
   };
 
-  const nextImage = () => setActiveImage((prev) => (prev + 1) % images.length);
-  const prevImage = () => setActiveImage((prev) => (prev - 1 + images.length) % images.length);
+  const nextImage = () => setActiveImage((prev) => (prev + 1) % imageUrls.length);
+  const prevImage = () => setActiveImage((prev) => (prev - 1 + imageUrls.length) % imageUrls.length);
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -198,7 +200,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <div className="w-full lg:w-1/2 space-y-4">
           <div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden group">
             <ProductImage 
-              src={images[activeImage]} 
+              src={imageUrls[activeImage]} 
               alt={product.name} 
               fill 
               className="object-cover" 
@@ -212,7 +214,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             )}
             
             {/* Gallery Navigation */}
-            {images.length > 1 && (
+            {imageUrls.length > 1 && (
               <>
                 <button 
                   onClick={prevImage}
@@ -231,9 +233,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
           
           {/* Thumbnails */}
-          {images.length > 1 && (
+          {imageUrls.length > 1 && (
             <div className="flex gap-4 overflow-x-auto pb-2 snap-x">
-              {images.map((img: string, i: number) => (
+              {imageUrls.map((img: string, i: number) => (
                 <button 
                   key={i} 
                   onClick={() => setActiveImage(i)}

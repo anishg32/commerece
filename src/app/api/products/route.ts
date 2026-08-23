@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
+import mongoose from "mongoose";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 
@@ -17,8 +18,8 @@ export async function GET(req: NextRequest) {
     const brand = searchParams.get("brand") || "";
     const sort = searchParams.get("sort") || "newest"; // newest, price_asc, price_desc, rating
     
-    // Base query: Only active and non-deleted products
-    const query: any = { isActive: true, isDeleted: { $ne: true } };
+    // Base query: Only active, non-deleted, and VERIFIED ACTIVE products
+    const query: any = { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" };
 
     // Search
     if (search) {
@@ -59,10 +60,27 @@ export async function GET(req: NextRequest) {
       if (query.$or[0].$and.length === 0) delete query.$or;
     }
 
-    // Brand filter
+    // Brand filter (now checking against ObjectIds or brand names via lookup later, but for now we expect brand ObjectId)
     if (brand) {
-      query.brand = { $regex: `^${brand}$`, $options: "i" };
+      if (mongoose.Types.ObjectId.isValid(brand)) {
+        query.brand = brand;
+      }
     }
+
+    // Dynamic Attribute filters
+    // Look for any query parameter that starts with "attr_"
+    searchParams.forEach((value, key) => {
+      if (key.startsWith("attr_")) {
+        const attributeName = key.replace("attr_", "");
+        // Support multiple values via comma separation
+        const values = value.split(",").map(v => v.trim());
+        if (values.length > 1) {
+          query[`attributes.${attributeName}`] = { $in: values };
+        } else {
+          query[`attributes.${attributeName}`] = value;
+        }
+      }
+    });
 
     // Special flags
     if (searchParams.get("featured") === "true") query.isFeatured = true;

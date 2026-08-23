@@ -178,7 +178,7 @@ export default function Home() {
                 <Link key={product._id} href={`/products/${product._id}`} className="group space-y-4">
                   <div className="aspect-[3/4] bg-secondary relative overflow-hidden rounded-2xl">
                     <ProductImage 
-                      src={product.thumbnail || product.images?.[0]} 
+                      src={product.thumbnail || product.images?.[0]?.url} 
                       alt={product.name} 
                       fill 
                       className="object-cover transition-transform duration-700 group-hover:scale-105"

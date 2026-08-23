@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         _id: item._id,
         name: product.name,
         price: currentPrice,
-        image: product.thumbnail || product.images?.[0] || "",
+        image: product.thumbnail || product.images?.[0]?.url || "",
         stock: product.stock,
         status,
         message

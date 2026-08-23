@@ -14,7 +14,7 @@ export async function GET() {
 
     // Get product counts per category (only active products)
     const counts = await Product.aggregate([
-      { $match: { isActive: true, isDeleted: { $ne: true } } },
+      { $match: { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" } },
       { $group: { _id: "$category", count: { $sum: 1 } } }
     ]);
     

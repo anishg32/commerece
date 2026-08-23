@@ -21,9 +21,12 @@ export default function ProductsPage() {
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const [attributeFilters, setAttributeFilters] = useState<Record<string, string[]>>({});
   
   const { addItem: addToCart } = useCartStore();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+
+  const activeCategoryData = categories.find(c => c.slug === category);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -31,6 +34,11 @@ export default function ProductsPage() {
       .then(setCategories)
       .catch(console.error);
   }, []);
+
+  // Reset attribute filters when category changes
+  useEffect(() => {
+    setAttributeFilters({});
+  }, [category]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,6 +52,13 @@ export default function ProductsPage() {
           sort
         });
         if (category) params.set("category", category);
+
+        // Add dynamic attribute filters to URL params
+        Object.entries(attributeFilters).forEach(([key, values]) => {
+          if (values.length > 0) {
+            params.set(`attr_${key}`, values.join(','));
+          }
+        });
 
         const res = await fetch(`/api/products?${params}`);
         if (res.ok) {
@@ -65,7 +80,7 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
-  }, [page, category, sort]);
+  }, [page, category, sort, attributeFilters]);
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -73,7 +88,7 @@ export default function ProductsPage() {
       _id: product._id,
       name: product.name,
       price: product.discountPrice || product.price,
-      image: product.thumbnail || product.images?.[0] || "",
+      image: product.thumbnail || product.images?.[0]?.url || "",
       brand: product.brand || 'Luxe',
       stock: product.stock
     }, 1);
@@ -89,7 +104,7 @@ export default function ProductsPage() {
         _id: product._id,
         name: product.name,
         price: product.discountPrice || product.price,
-        image: product.thumbnail || product.images?.[0] || "",
+        image: product.thumbnail || product.images?.[0]?.url || "",
         brand: product.brand || 'Luxe',
         stock: product.stock
       });
@@ -158,6 +173,66 @@ export default function ProductsPage() {
               ))}
             </div>
           </div>
+
+          {/* Dynamic Attribute Filters based on Selected Category */}
+          {activeCategoryData && activeCategoryData.attributes?.filter((attr: any) => attr.isFilterable && attr.options?.length > 0).map((attr: any) => (
+            <div key={attr.name} className="animate-in fade-in slide-in-from-top-4">
+              <h3 className="font-semibold mb-4 pb-2 border-b">{attr.name}</h3>
+              {attr.type === "color" ? (
+                <div className="flex flex-wrap gap-2">
+                  {attr.options.map((opt: string) => {
+                    const isChecked = attributeFilters[attr.name]?.includes(opt);
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => {
+                          setAttributeFilters(prev => {
+                            const current = prev[attr.name] || [];
+                            const updated = isChecked ? current.filter(c => c !== opt) : [...current, opt];
+                            return { ...prev, [attr.name]: updated };
+                          });
+                          setPage(1);
+                        }}
+                        title={opt}
+                        className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${isChecked ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-border hover:scale-105'}`}
+                        style={{ backgroundColor: opt.toLowerCase().replace(' ', '') === 'naturaltitanium' ? '#b0aba5' : opt.toLowerCase() }}
+                      >
+                        {isChecked && (
+                          <span className={`text-[10px] ${['White', 'Silver'].includes(opt) ? 'text-black' : 'text-white'}`}>✓</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                  {attr.options.map((opt: string) => {
+                    const isChecked = attributeFilters[attr.name]?.includes(opt);
+                    return (
+                      <label key={opt} className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            setAttributeFilters(prev => {
+                              const current = prev[attr.name] || [];
+                              const updated = isChecked ? current.filter(c => c !== opt) : [...current, opt];
+                              return { ...prev, [attr.name]: updated };
+                            });
+                            setPage(1);
+                          }}
+                          className="rounded border-input text-primary focus:ring-primary accent-primary"
+                        />
+                        <span className={`text-sm transition-colors group-hover:text-foreground ${isChecked ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                          {opt}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
         </aside>
 
         {/* Product Grid */}
@@ -191,7 +266,7 @@ export default function ProductsPage() {
                     <Link key={product._id} href={`/products/${product._id}`} className="group flex flex-col">
                       <div className="aspect-[4/5] bg-secondary relative overflow-hidden rounded-2xl mb-4">
                         <ProductImage 
-                          src={product.thumbnail || product.images?.[0]} 
+                          src={product.thumbnail || product.images?.[0]?.url} 
                           alt={product.name} 
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105"

@@ -102,7 +102,13 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // Handle manual session updates (from useSession().update)
+      if (trigger === "update" && session) {
+        if (session.name) token.name = session.name;
+        if (session.email) token.email = session.email;
+      }
+
       // If sign in is happening
       if (user) {
         if (account?.provider === "google") {
@@ -124,6 +130,8 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
       }
       return session;
     }
