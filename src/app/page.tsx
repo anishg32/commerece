@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   await dbConnect();
+  await Brand.init();
 
   // Fetch categories directly on the server
   const categoriesDocs = await Category.find({ isActive: true })
