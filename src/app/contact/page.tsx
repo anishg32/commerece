@@ -33,7 +33,7 @@ export default function ContactPage() {
             <div>
               <h3 className="font-semibold text-lg mb-1">Email Us</h3>
               <p className="text-muted-foreground text-sm mb-2">For general inquiries and support.</p>
-              <a href="mailto:support@luxe.com" className="text-primary font-medium hover:underline">support@luxe.com</a>
+              <a href="mailto:support@arjstore.com" className="text-primary font-medium hover:underline">support@arjstore.com</a>
             </div>
           </div>
           

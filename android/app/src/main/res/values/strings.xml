@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Luxe Commerce</string>
-    <string name="title_activity_main">Luxe Commerce</string>
-    <string name="package_name">com.luxe.ecommerce</string>
-    <string name="custom_url_scheme">com.luxe.ecommerce</string>
+    <string name="app_name">ARJ Store</string>
+    <string name="title_activity_main">ARJ Store</string>
+    <string name="package_name">com.arj.store</string>
+    <string name="custom_url_scheme">com.arj.store</string>
 </resources>

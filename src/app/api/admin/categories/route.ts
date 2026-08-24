@@ -13,16 +13,16 @@ export async function GET() {
     }
 
     await dbConnect();
-    const categories = await Category.find().sort({ name: 1 }).lean();
+    const categories = await Category.find().sort({ sortOrder: 1, name: 1 }).lean();
 
-    // Get product counts
+    // Get direct product counts
     const counts = await Product.aggregate([
-      { $match: { isActive: true, isDeleted: { $ne: true } } },
+      { $match: { isDeleted: { $ne: true } } },
       { $group: { _id: "$category", count: { $sum: 1 } } },
     ]);
-    const countMap = new Map(counts.map((c: Record<string, any>) => [c._id.toString(), c.count]));
+    const countMap = new Map(counts.map((c: any) => [c._id.toString(), c.count]));
 
-    const categoriesWithCounts = categories.map((cat: Record<string, any>) => ({
+    const categoriesWithCounts = categories.map((cat: any) => ({
       ...cat,
       productCount: countMap.get(cat._id.toString()) || 0,
     }));
@@ -51,18 +51,10 @@ export async function POST(req: Request) {
       data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     }
 
-    // Generate subcategory slugs
-    if (data.subcategories) {
-      data.subcategories = data.subcategories.map((sub: Record<string, any>) => ({
-        ...sub,
-        slug: sub.slug || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-      }));
-    }
-
     const category = await Category.create(data);
     return NextResponse.json(category, { status: 201 });
   } catch (error: unknown) {
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 11000) {
       return NextResponse.json({ message: "Category slug already exists" }, { status: 400 });
     }
     return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });
@@ -82,14 +74,6 @@ export async function PUT(req: Request) {
 
     if (!id) {
       return NextResponse.json({ message: "Category ID is required" }, { status: 400 });
-    }
-
-    // Generate subcategory slugs
-    if (updateData.subcategories) {
-      updateData.subcategories = updateData.subcategories.map((sub: Record<string, any>) => ({
-        ...sub,
-        slug: sub.slug || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-      }));
     }
 
     const category = await Category.findByIdAndUpdate(id, updateData, {
@@ -126,7 +110,16 @@ export async function DELETE(req: Request) {
     const productCount = await Product.countDocuments({ category: id, isDeleted: { $ne: true } });
     if (productCount > 0) {
       return NextResponse.json(
-        { message: `Cannot delete: ${productCount} products are in this category` },
+        { message: `Cannot delete: ${productCount} products are directly in this category. Reassign them first.` },
+        { status: 400 }
+      );
+    }
+    
+    // Check for subcategories
+    const childCount = await Category.countDocuments({ parentId: id });
+    if (childCount > 0) {
+      return NextResponse.json(
+        { message: `Cannot delete: ${childCount} subcategories exist under this category. Reassign or delete them first.` },
         { status: 400 }
       );
     }

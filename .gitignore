@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs and temporary files
+.idea/
+android/.idea/
+android/.gradle/
+rename.js
+test_homepage_db.ts
+.artifacts/

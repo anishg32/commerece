@@ -19,6 +19,8 @@ export default function CartPage() {
   }, []);
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const originalTotal = items.reduce((sum, item) => sum + (item.originalPrice || item.price) * item.quantity, 0);
+  const savings = originalTotal - total;
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
@@ -149,8 +151,12 @@ export default function CartPage() {
             
             <div className="space-y-4 text-sm mb-6">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal ({items.length} items)</span>
-                <span className="font-medium">₹{total.toLocaleString()}</span>
+                <span className="text-muted-foreground">Total MRP ({items.length} items)</span>
+                <span className="font-medium text-muted-foreground line-through">₹{originalTotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Discount on MRP</span>
+                <span className="font-medium text-green-600">- ₹{savings.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-muted-foreground text-xs pb-4 border-b">
                 <span>Taxes and shipping calculated at checkout</span>
@@ -159,6 +165,11 @@ export default function CartPage() {
                 <span className="font-bold text-base">Estimated Total</span>
                 <span className="font-bold text-2xl">₹{total.toLocaleString()}</span>
               </div>
+              {savings > 0 && (
+                <div className="bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-lg text-center mt-2 border border-green-200">
+                  You will save ₹{savings.toLocaleString()} on this order
+                </div>
+              )}
             </div>
             
             <Button 

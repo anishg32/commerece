@@ -13,7 +13,7 @@ export function MobileNav() {
     { name: "Search", href: "/search", icon: Search },
     { name: "Cart", href: "/cart", icon: ShoppingBag, badge: 0 },
     { name: "Wishlist", href: "/wishlist", icon: Heart },
-    { name: "Profile", href: "/profile", icon: User },
+    { name: "Profile", href: "/dashboard", icon: User },
   ];
 
   return (

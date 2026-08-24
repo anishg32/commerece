@@ -15,7 +15,7 @@ export default function ReturnsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-foreground">Our Return Policy</h2>
             <p className="text-muted-foreground leading-relaxed">
-              At LUXE, we want you to be completely satisfied with your purchase. If for any reason you are not, we offer a hassle-free 30-day return window from the date of delivery for all eligible items.
+              At ARJ STORE, we want you to be completely satisfied with your purchase. If for any reason you are not, we offer a hassle-free 30-day return window from the date of delivery for all eligible items.
             </p>
           </section>
 
@@ -49,7 +49,7 @@ export default function ReturnsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-foreground">Damaged or Defective Products</h2>
             <p className="text-muted-foreground leading-relaxed">
-              If you receive an item that is damaged or defective, please contact our customer support team immediately at <a href="mailto:support@luxe.com" className="text-primary hover:underline">support@luxe.com</a> with photos of the damage. We will expedite a replacement or full refund at no additional cost to you.
+              If you receive an item that is damaged or defective, please contact our customer support team immediately at <a href="mailto:support@arjstore.com" className="text-primary hover:underline">support@arjstore.com</a> with photos of the damage. We will expedite a replacement or full refund at no additional cost to you.
             </p>
           </section>
         </div>

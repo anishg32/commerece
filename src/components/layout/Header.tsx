@@ -13,7 +13,7 @@ interface CategoryResponse {
   _id: string;
   name: string;
   slug: string;
-  subcategories: { name: string; slug: string }[];
+  children: { _id: string; name: string; slug: string }[];
 }
 
 interface ProductSearchResponse {
@@ -122,7 +122,7 @@ export function Header() {
               <Menu className="w-5 h-5" />
             </Button>
             <Link href="/" className="font-bold text-xl md:text-2xl tracking-tight">
-              LUXE<span className="text-primary">.</span>
+              ARJ STORE<span className="text-primary">.</span>
             </Link>
           </div>
 
@@ -148,19 +148,24 @@ export function Header() {
                 >
                   {categories.length > 0 ? categories.map((cat: CategoryResponse) => (
                     <div key={cat._id} className="flex flex-col gap-3">
-                      <Link href={`/category/${cat.slug}`} className="font-bold text-base hover:text-primary transition-colors">
+                      <Link href={`/categories/${cat.slug}`} className="font-bold text-base hover:text-primary transition-colors">
                         {cat.name}
                       </Link>
                       <div className="flex flex-col gap-2">
-                        {cat.subcategories?.map((sub: { name: string; slug: string }) => (
+                        {cat.children?.slice(0, 8).map((child: any) => (
                           <Link 
-                            key={sub.slug} 
-                            href={`/products?category=${cat.slug}&subcategory=${sub.slug}`}
+                            key={child.slug} 
+                            href={`/categories/${child.slug}`}
                             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                           >
-                            {sub.name}
+                            {child.name}
                           </Link>
                         ))}
+                        {cat.children && cat.children.length > 8 && (
+                          <Link href={`/categories/${cat.slug}`} className="text-xs text-primary font-medium hover:underline mt-1">
+                            View all {cat.children.length} &rarr;
+                          </Link>
+                        )}
                       </div>
                     </div>
                   )) : (
@@ -294,7 +299,7 @@ export function Header() {
       }`}>
         <div className="p-4 border-b flex items-center justify-between">
           <Link href="/" className="font-bold text-xl tracking-tight" onClick={() => setMobileMenuOpen(false)}>
-            LUXE<span className="text-primary">.</span>
+            ARJ STORE<span className="text-primary">.</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
             <X className="w-5 h-5" />

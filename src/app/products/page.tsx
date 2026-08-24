@@ -8,7 +8,12 @@ import { ProductImage } from "@/components/ui/ProductImage";
 import { useCartStore } from "@/store/useCartStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 
-export default function ProductsPage() {
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+function ProductsContent() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") || "";
   const [products, setProducts] = useState<Record<string, any>[]>([]);
   const [categories, setCategories] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +49,7 @@ export default function ProductsPage() {
   }, [category]);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchProducts = async () => {
       if (page === 1) setLoading(true);
       else setLoadingMore(true);
@@ -56,14 +62,17 @@ export default function ProductsPage() {
         });
         if (category) params.set("category", category);
 
-        // Add dynamic attribute filters to URL params
         Object.entries(attributeFilters).forEach(([key, values]) => {
           if (values.length > 0) {
             params.set(`attr_${key}`, values.join(','));
           }
         });
 
-        const res = await fetch(`/api/products?${params}`);
+        if (search) {
+          params.set("search", search);
+        }
+
+        const res = await fetch(`/api/products?${params}`, { signal: controller.signal });
         if (res.ok) {
           const data = await res.json();
           if (page === 1) {
@@ -74,16 +83,20 @@ export default function ProductsPage() {
           setTotalPages(data.pages);
           setTotal(data.total);
         }
-      } catch (e) {
+      } catch (e: any) {
+        if (e.name === 'AbortError') return;
         console.error(e);
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     };
 
     fetchProducts();
-  }, [page, category, sort, attributeFilters]);
+    return () => controller.abort();
+  }, [page, category, sort, attributeFilters, search]);
 
   const handleAddToCart = (e: React.MouseEvent, product: Record<string, any>) => {
     e.preventDefault();
@@ -92,7 +105,7 @@ export default function ProductsPage() {
       name: product.name,
       price: product.discountPrice || product.price,
       image: product.thumbnail || product.images?.[0]?.url || "",
-      brand: product.brand || 'Luxe',
+      brand: product.brand?.name || 'ARJ Store',
       stock: product.stock
     }, 1);
     alert(`Added ${product.name} to cart!`);
@@ -108,7 +121,7 @@ export default function ProductsPage() {
         name: product.name,
         price: product.discountPrice || product.price,
         image: product.thumbnail || product.images?.[0]?.url || "",
-        brand: product.brand || 'Luxe',
+        brand: product.brand?.name || 'ARJ Store',
         stock: product.stock
       });
     }
@@ -118,7 +131,9 @@ export default function ProductsPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">All Products</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
+            {search ? `Search Results for "${search}"` : "All Products"}
+          </h1>
           <p className="text-muted-foreground">Showing {products.length} of {total} products</p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
@@ -304,7 +319,7 @@ export default function ProductsPage() {
                       </div>
 
                       <div className="space-y-1 flex-1">
-                        <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">{product.brand || 'Luxe'}</div>
+                        <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">{product.brand?.name || 'ARJ Store'}</div>
                         <h3 className="font-medium leading-tight line-clamp-2 group-hover:text-primary transition-colors text-sm mb-2">
                           {product.name}
                         </h3>
@@ -338,5 +353,13 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto p-20 text-center">Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }

@@ -8,12 +8,12 @@ export default function TermsPage() {
         <p className="text-sm text-muted-foreground mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
         
         <p className="lead text-lg text-muted-foreground mb-8">
-          Welcome to LUXE. These Terms and Conditions outline the rules and regulations for the use of LUXE&apos;s Website, located at luxe.com.
+          Welcome to ARJ STORE. These Terms and Conditions outline the rules and regulations for the use of ARJ STORE&apos;s Website, located at arjstore.com.
         </p>
 
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">1. Acceptance of Terms</h2>
         <p className="text-muted-foreground leading-relaxed">
-          By accessing this website we assume you accept these terms and conditions. Do not continue to use LUXE if you do not agree to take all of the terms and conditions stated on this page.
+          By accessing this website we assume you accept these terms and conditions. Do not continue to use ARJ STORE if you do not agree to take all of the terms and conditions stated on this page.
         </p>
 
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">2. Products and Pricing</h2>
@@ -38,7 +38,7 @@ export default function TermsPage() {
 
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">6. Contact Information</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Questions about the Terms of Service should be sent to us at <a href="mailto:legal@luxe.com" className="text-primary hover:underline">legal@luxe.com</a>.
+          Questions about the Terms of Service should be sent to us at <a href="mailto:legal@arjstore.com" className="text-primary hover:underline">legal@arjstore.com</a>.
         </p>
       </div>
     </div>

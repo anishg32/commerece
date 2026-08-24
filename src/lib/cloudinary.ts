@@ -13,7 +13,7 @@ export async function uploadImage(
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: `luxe/${folder}`,
+        folder: `arj/${folder}`,
         resource_type: "image",
         transformation: [
           { quality: "auto", fetch_format: "auto" },

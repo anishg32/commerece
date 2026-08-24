@@ -1,52 +1,66 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Star, Truck, Shield, Clock } from "lucide-react";
+import { ArrowRight, Truck, Shield, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductImage } from "@/components/ui/ProductImage";
+import dbConnect from "@/lib/mongodb";
+import Category from "@/models/Category";
+import Product from "@/models/Product";
 
-export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<Record<string, unknown>[]>([]);
-  const [categories, setCategories] = useState<Record<string, unknown>[]>([]);
-  const [loading, setLoading] = useState(true);
+// Disable Next.js static caching for this page so it always shows the latest products
+export const dynamic = "force-dynamic";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          fetch("/api/products?featured=true&limit=4"),
-          fetch("/api/categories")
-        ]);
+export default async function Home() {
+  await dbConnect();
 
-        if (prodRes.ok) {
-          const data = await prodRes.json();
-          setFeaturedProducts(data.products || []);
-        }
+  // Fetch categories directly on the server
+  const categoriesDocs = await Category.find({ isActive: true })
+    .sort({ sortOrder: 1, name: 1 })
+    .lean();
 
-        if (catRes.ok) {
-          const catData = await catRes.json();
-          // Get top 4 categories by product count, prioritizing ones with images
-          const sortedCats = catData
-            .filter((c: Record<string, unknown>) => (c.productCount as number) > 0)
-            .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
-              if (a.image && !b.image) return -1;
-              if (!a.image && b.image) return 1;
-              return (b.productCount as number) - (a.productCount as number);
-            })
-            .slice(0, 4);
-          setCategories(sortedCats);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch direct product counts for each category
+  const counts = await Product.aggregate([
+    { $match: { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" } },
+    { $group: { _id: "$category", count: { $sum: 1 } } }
+  ]);
+  const countMap = new Map(counts.map((c: any) => [c._id.toString(), c.count]));
 
-    fetchData();
-  }, []);
+  const categories = categoriesDocs
+    .map((c) => {
+      const productCount = countMap.get(c._id.toString()) || 0;
+      return { ...c, productCount };
+    })
+    .filter((c) => c.productCount > 0)
+    .sort((a, b) => {
+      if (a.image && !b.image) return -1;
+      if (!a.image && b.image) return 1;
+      return b.productCount - a.productCount;
+    })
+    .slice(0, 4);
+
+  // Fetch featured products
+  let featuredProducts = await Product.find({
+    isActive: true,
+    isDeleted: { $ne: true },
+    status: "ACTIVE",
+    isFeatured: true,
+  })
+    .populate("brand", "name slug")
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .lean();
+
+  if (featuredProducts.length === 0) {
+    featuredProducts = await Product.find({
+      isActive: true,
+      isDeleted: { $ne: true },
+      status: "ACTIVE",
+    })
+      .populate("brand", "name slug")
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .lean();
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -62,7 +76,7 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-black/40" />
         </div>
-        
+
         <div className="container relative z-10 mx-auto px-4 text-center text-white">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-in slide-in-from-bottom-8 duration-1000">
             Elevate Your <br /> Everyday
@@ -120,25 +134,21 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="aspect-[4/5] bg-secondary animate-pulse rounded-2xl" />
-              ))
-            ) : categories.length === 0 ? (
+            {categories.length === 0 ? (
               <div className="col-span-full py-12 text-center text-muted-foreground">No categories available.</div>
             ) : (
-              categories.map((cat) => (
-                <Link key={cat._id as string} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/5]">
-                  <ProductImage 
-                    src={(cat.image as any)?.url || (typeof cat.image === 'string' ? cat.image : "")} 
-                    alt={cat.name as string} 
-                    fill 
+              categories.map((cat: any) => (
+                <Link key={cat._id.toString()} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/5]">
+                  <ProductImage
+                    src={(cat.image?.url) || (typeof cat.image === 'string' ? cat.image : "")}
+                    alt={cat.name}
+                    fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute bottom-0 left-0 p-6 w-full text-white">
-                    <h3 className="text-xl font-bold mb-1">{cat.name as string}</h3>
-                    <p className="text-white/80 text-sm font-medium">{cat.productCount as number} Products</p>
+                    <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
+                    <p className="text-white/80 text-sm font-medium">{cat.productCount} Products</p>
                   </div>
                 </Link>
               ))
@@ -163,72 +173,47 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <div className="aspect-[3/4] bg-secondary animate-pulse rounded-2xl" />
-                  <div className="h-4 bg-secondary animate-pulse rounded w-2/3" />
-                  <div className="h-4 bg-secondary animate-pulse rounded w-1/3" />
-                </div>
-              ))
-            ) : featuredProducts.length === 0 ? (
+            {featuredProducts.length === 0 ? (
               <div className="col-span-full py-12 text-center text-muted-foreground">No featured products available.</div>
             ) : (
-              featuredProducts.map((product) => {
-                const discountPrice = product.discountPrice as number | undefined;
-                const price = product.price as number;
+              featuredProducts.map((product: any) => {
+                const discountPrice = product.discountPrice;
+                const price = product.price;
+                const percentOff = discountPrice ? Math.round(((price - discountPrice) / price) * 100) : null;
                 return (
-                <Link key={product._id as string} href={`/products/${product._id}`} className="group space-y-4">
-                  <div className="aspect-[3/4] bg-secondary relative overflow-hidden rounded-2xl">
-                    <ProductImage 
-                      src={(product.thumbnail || (product.images as any[])?.[0]?.url) as string} 
-                      alt={product.name as string} 
-                      fill 
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    {discountPrice && (
-                      <div className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
-                        {product.discountPercentage as number}% OFF
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
-                      {(product.brand as string) || 'Luxe'}
-                    </div>
-                    <h3 className="font-semibold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">
-                      {product.name as string}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="font-bold">₹{(discountPrice || price).toLocaleString()}</span>
+                  <Link key={product._id.toString()} href={`/products/${product._id.toString()}`} className="group space-y-4">
+                    <div className="aspect-[3/4] bg-secondary relative overflow-hidden rounded-2xl">
+                      <ProductImage
+                        src={(product.thumbnail || product.images?.[0]?.url) as string}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
                       {discountPrice && (
-                        <span className="text-muted-foreground line-through text-sm">₹{price.toLocaleString()}</span>
+                        <div className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
+                          {percentOff}% OFF
+                        </div>
                       )}
                     </div>
-                  </div>
-                </Link>
-              )})
+                    <div>
+                      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
+                        {product.brand?.name || 'ARJ Store'}
+                      </div>
+                      <h3 className="font-semibold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="font-bold">₹{(discountPrice || price).toLocaleString()}</span>
+                        {discountPrice && (
+                          <span className="text-muted-foreground line-through text-sm">₹{price.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
             )}
           </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-24">
-        <div className="container mx-auto px-4 max-w-2xl text-center space-y-8">
-          <h2 className="text-3xl font-bold tracking-tight">Join the LUXE Community</h2>
-          <p className="text-muted-foreground">
-            Subscribe to receive updates, access to exclusive deals, and more.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input 
-              type="email" 
-              placeholder="Enter your email address" 
-              className="flex-1 px-4 py-3 rounded-full border bg-background outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-            <Button type="submit" size="lg" className="rounded-full px-8">Subscribe</Button>
-          </form>
         </div>
       </section>
     </div>

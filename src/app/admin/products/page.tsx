@@ -141,8 +141,8 @@ export default function AdminProductsPage() {
                           )}
                         </div>
                         <div>
-                          <div className="font-medium line-clamp-1">{product.name}</div>
-                          <div className="text-xs text-muted-foreground">{product.brand || "—"}</div>
+                          <div className="font-semibold">{product.name}</div>
+                          <div className="text-xs text-muted-foreground">{product.brand?.name || "—"}</div>
                         </div>
                       </div>
                     </td>
@@ -164,9 +164,13 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="p-4 hidden lg:table-cell">
                       <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        product.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        product.status === 'ACTIVE' ? "bg-green-100 text-green-700" : 
+                        product.status === 'OUT_OF_STOCK' ? "bg-red-100 text-red-700" :
+                        product.status === 'DRAFT' ? "bg-gray-100 text-gray-700" :
+                        product.status === 'PENDING_VERIFICATION' ? "bg-yellow-100 text-yellow-700" :
+                        "bg-secondary text-secondary-foreground"
                       }`}>
-                        {product.isActive ? "Active" : "Inactive"}
+                        {product.status || (product.isActive ? "ACTIVE" : "INACTIVE")}
                       </span>
                     </td>
                     <td className="p-4 text-right">

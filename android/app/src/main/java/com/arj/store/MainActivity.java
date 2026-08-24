@@ -1,4 +1,4 @@
-package com.luxe.ecommerce;
+package com.arj.store;
 
 import com.getcapacitor.BridgeActivity;
 

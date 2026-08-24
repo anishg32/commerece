@@ -5,6 +5,7 @@ export interface CartItem {
   _id: string;
   name: string;
   price: number;
+  originalPrice?: number;
   image: string;
   quantity: number;
   brand: string;
@@ -76,7 +77,7 @@ export const useCartStore = create<CartStore>()(
       }
     }),
     {
-      name: 'luxe-cart-storage',
+      name: 'arj-cart-storage',
       skipHydration: true,
     }
   )

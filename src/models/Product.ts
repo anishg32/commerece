@@ -27,7 +27,6 @@ export interface IProduct extends Document {
   images: IProductImage[];
   thumbnail?: string;
   category: mongoose.Types.ObjectId;
-  subcategory?: string;
   brand?: mongoose.Types.ObjectId;
   price: number;
   discountPrice?: number;
@@ -79,7 +78,6 @@ const ProductSchema: Schema = new Schema(
     }],
     thumbnail: { type: String },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
-    subcategory: { type: String },
     brand: { type: Schema.Types.ObjectId, ref: "Brand" },
     price: { type: Number, required: true },
     discountPrice: { type: Number },

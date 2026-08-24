@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.luxe.ecommerce"
+    namespace = "com.arj.store"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.luxe.ecommerce"
+        applicationId "com.arj.store"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

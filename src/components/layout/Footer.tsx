@@ -82,11 +82,11 @@ export function Footer() {
       </div>
 
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="space-y-6">
             <Link href="/" className="font-bold text-3xl tracking-tight text-white inline-block">
-              LUXE<span className="text-primary">.</span>
+              ARJ STORE<span className="text-primary">.</span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
               {settings?.brandDescription || "Premium e-commerce destination for high-quality products and an exceptional shopping experience."}
@@ -169,48 +169,12 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Newsletter */}
-          <div>
-            <h3 className="font-semibold text-white tracking-wider uppercase text-sm mb-6">Newsletter</h3>
-            <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-              Subscribe to receive updates, access to exclusive deals, and more.
-            </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-              <div className="relative">
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email" 
-                  disabled={status === "loading" || status === "success"}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-white outline-none focus:border-primary focus:bg-slate-800 transition-all disabled:opacity-50"
-                  required
-                />
-              </div>
-              <button 
-                type="submit" 
-                disabled={status === "loading" || status === "success" || !email}
-                className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:hover:bg-primary flex items-center justify-center gap-2"
-              >
-                {status === "loading" && <Loader2 className="w-4 h-4 animate-spin" />}
-                {status === "success" && <Check className="w-4 h-4" />}
-                {status === "idle" || status === "error" ? "Subscribe" : status === "loading" ? "Subscribing..." : "Subscribed"}
-              </button>
-              
-              {message && (
-                <p className={`text-xs mt-1 font-medium ${status === "success" ? "text-green-400" : "text-red-400"}`}>
-                  {message}
-                </p>
-              )}
-            </form>
-          </div>
         </div>
         
         {/* Bottom Bar */}
         <div className="border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} LUXE. All rights reserved.
+            &copy; {new Date().getFullYear()} ARJ STORE. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-slate-500">
             <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>

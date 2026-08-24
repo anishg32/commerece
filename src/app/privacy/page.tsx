@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         <p className="text-sm text-muted-foreground mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
         
         <p className="lead text-lg text-muted-foreground mb-8">
-          At LUXE, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
+          At ARJ STORE, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
         </p>
 
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">1. Information We Collect</h2>
@@ -45,10 +45,10 @@ export default function PrivacyPage() {
         <h2 className="text-2xl font-semibold mb-4 text-foreground mt-8">4. Contact Us</h2>
         <p className="text-muted-foreground leading-relaxed">
           If you have questions or comments about this Privacy Policy, please contact us at: <br/><br/>
-          <strong>LUXE Inc.</strong><br/>
+          <strong>ARJ STORE Inc.</strong><br/>
           123 Luxury Avenue, Suite 500<br/>
           New York, NY 10001<br/>
-          <a href="mailto:privacy@luxe.com" className="text-primary hover:underline">privacy@luxe.com</a>
+          <a href="mailto:privacy@arjstore.com" className="text-primary hover:underline">privacy@arjstore.com</a>
         </p>
       </div>
     </div>

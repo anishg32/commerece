@@ -22,6 +22,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [reviews, setReviews] = useState<any[]>([]);
   const [newReview, setNewReview] = useState({ rating: 5, text: "" });
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   
   const { addItem: addToCart } = useCartStore();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
@@ -54,8 +55,45 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       }
     };
 
+    const fetchRelatedProducts = async () => {
+      try {
+        // First try to get the product to know its category
+        const res = await fetch(`/api/products/${resolvedParams.id}`);
+        if (res.ok) {
+          const prod = await res.json();
+          const categorySlug = prod.category?.slug;
+          let url = `/api/products?limit=5`;
+          if (categorySlug) {
+            url += `&category=${categorySlug}`;
+          }
+          const relRes = await fetch(url);
+          if (relRes.ok) {
+            const data = await relRes.json();
+            // Filter out current product and limit to 4
+            const filtered = (data.products || []).filter((p: any) => p._id !== resolvedParams.id).slice(0, 4);
+            
+            // If not enough related products from same category, fetch latest
+            if (filtered.length < 4) {
+              const latestRes = await fetch(`/api/products?limit=8`);
+              if (latestRes.ok) {
+                const latestData = await latestRes.json();
+                const existingIds = new Set(filtered.map((p: any) => p._id));
+                existingIds.add(resolvedParams.id);
+                const extra = (latestData.products || []).filter((p: any) => !existingIds.has(p._id));
+                filtered.push(...extra.slice(0, 4 - filtered.length));
+              }
+            }
+            setRelatedProducts(filtered);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     fetchProduct();
     fetchReviews();
+    fetchRelatedProducts();
   }, [resolvedParams.id]);
 
   const submitReview = async (e: React.FormEvent) => {
@@ -108,6 +146,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const isWishlisted = isInWishlist(product._id);
   const price = product.discountPrice || product.price;
   const isOutOfStock = product.stock <= 0;
+  const discountPercentage = product.discountPrice ? Math.round(((product.price - product.discountPrice) / product.price) * 100) : 0;
   const imageUrls = product.images?.length > 0 
     ? product.images.map((img: any) => img.url)
     : (product.thumbnail ? [product.thumbnail] : []);
@@ -118,8 +157,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       _id: product._id,
       name: product.name,
       price: price,
+      originalPrice: product.price,
       image: imageUrls[0] || "",
-      brand: product.brand || 'Luxe',
+      brand: product.brand?.name || 'ARJ Store',
       stock: product.stock,
       variant: { color: selectedColor, size: selectedSize }
     }, quantity);
@@ -167,7 +207,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         name: product.name,
         price: price,
         image: imageUrls[0] || "",
-        brand: product.brand || 'Luxe',
+        brand: product.brand?.name || 'ARJ Store',
         stock: product.stock
       });
     }
@@ -209,7 +249,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             />
             {product.discountPrice && (
               <div className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-sm font-bold px-3 py-1.5 rounded-full z-10">
-                {product.discountPercentage}% OFF
+                {discountPercentage}% OFF
               </div>
             )}
             
@@ -254,7 +294,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <div className="w-full lg:w-1/2 flex flex-col">
           <div className="mb-6">
             <div className="text-sm text-primary font-semibold uppercase tracking-wider mb-2">
-              {product.brand || 'Luxe'}
+              {product.brand?.name || 'ARJ Store'}
             </div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
               {product.name}
@@ -534,6 +574,66 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </div>
+
+      {/* Related Products */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-24 mb-12">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight mb-1">You May Also Like</h2>
+              <p className="text-muted-foreground text-sm">Discover more products you&apos;ll love</p>
+            </div>
+            <Button variant="ghost" className="hidden sm:flex" asChild>
+              <Link href="/products">
+                View all <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {relatedProducts.map((item: any) => {
+              const itemPrice = item.discountPrice || item.price;
+              const itemImageUrl = item.thumbnail || item.images?.[0]?.url;
+              return (
+                <Link
+                  key={item._id}
+                  href={`/products/${item._id}`}
+                  className="group space-y-3"
+                >
+                  <div className="aspect-[3/4] bg-secondary relative overflow-hidden rounded-2xl">
+                    <ProductImage
+                      src={itemImageUrl}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                    />
+                    {item.discountPrice && (
+                      <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
+                        {Math.round(((item.price - item.discountPrice) / item.price) * 100)}% OFF
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
+                      {item.brand?.name || 'ARJ Store'}
+                    </div>
+                    <h3 className="font-semibold text-sm md:text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="font-bold text-sm md:text-base">₹{itemPrice.toLocaleString()}</span>
+                      {item.discountPrice && (
+                        <span className="text-muted-foreground line-through text-xs">₹{item.price.toLocaleString()}</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

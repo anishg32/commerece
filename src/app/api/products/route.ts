@@ -3,6 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import Brand from "@/models/Brand";
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,17 +24,37 @@ export async function GET(req: NextRequest) {
 
     // Search
     if (search) {
+      // Find any brands that match the search term
+      const matchedBrands = await Brand.find({ name: { $regex: search, $options: "i" } }).select("_id");
+      const brandIds = matchedBrands.map(b => b._id);
+
       query.$or = [
         { name: { $regex: search, $options: "i" } },
-        { brand: { $regex: search, $options: "i" } },
         { tags: { $regex: search, $options: "i" } },
       ];
+      
+      if (brandIds.length > 0) {
+        query.$or.push({ brand: { $in: brandIds } });
+      }
     }
 
     // Category filter
     if (category) {
       const cat = await Category.findOne({ slug: category });
-      if (cat) query.category = cat._id;
+      if (cat) {
+        const getAllDescendants = async (parentId: any): Promise<any[]> => {
+          const children = await Category.find({ parentId });
+          let descendantIds: any[] = [];
+          for (const child of children) {
+            descendantIds.push(child._id);
+            const deeperDescendants = await getAllDescendants(child._id);
+            descendantIds = descendantIds.concat(deeperDescendants);
+          }
+          return descendantIds;
+        };
+        const descendantIds = await getAllDescendants(cat._id);
+        query.category = { $in: [cat._id, ...descendantIds] };
+      }
     }
 
     // Price filter (uses discountPrice if exists, else price)
@@ -60,10 +81,13 @@ export async function GET(req: NextRequest) {
       if (query.$or[0].$and.length === 0) delete query.$or;
     }
 
-    // Brand filter (now checking against ObjectIds or brand names via lookup later, but for now we expect brand ObjectId)
+    // Brand filter (can accept brand slug or ObjectId)
     if (brand) {
       if (mongoose.Types.ObjectId.isValid(brand)) {
         query.brand = brand;
+      } else {
+        const brandDoc = await Brand.findOne({ slug: brand });
+        if (brandDoc) query.brand = brandDoc._id;
       }
     }
 
@@ -97,8 +121,40 @@ export async function GET(req: NextRequest) {
     }
 
     const total = await Product.countDocuments(query);
+    
+    // Aggregate available filters (Brands and Attributes)
+    const filters: any = { brands: [], attributes: {} };
+    if (total > 0 && total < 5000) { // Safety limit for aggregation
+      const aggResult = await Product.aggregate([
+        { $match: query },
+        { $project: { brand: 1, attributes: 1 } }
+      ]);
+      
+      const brandIds = new Set<string>();
+      aggResult.forEach(p => {
+        if (p.brand) brandIds.add(p.brand.toString());
+        if (p.attributes) {
+          Object.entries(p.attributes).forEach(([k, v]) => {
+            if (!filters.attributes[k]) filters.attributes[k] = new Set();
+            filters.attributes[k].add(String(v));
+          });
+        }
+      });
+      
+      if (brandIds.size > 0) {
+        const brands = await Brand.find({ _id: { $in: Array.from(brandIds) } }).select("name slug").lean();
+        filters.brands = brands;
+      }
+      
+      // Convert sets to arrays
+      Object.keys(filters.attributes).forEach(k => {
+        filters.attributes[k] = Array.from(filters.attributes[k]).sort();
+      });
+    }
+
     const products = await Product.find(query)
       .populate("category", "name slug")
+      .populate("brand", "name slug")
       .sort(sortObj)
       .skip((page - 1) * limit)
       .limit(limit)
@@ -108,7 +164,8 @@ export async function GET(req: NextRequest) {
       products,
       total,
       page,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(total / limit),
+      filters
     });
   } catch (error: unknown) {
     return NextResponse.json({ message: (error instanceof Error ? error.message : String(error)) }, { status: 500 });

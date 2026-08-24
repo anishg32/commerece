@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import Brand from "@/models/Brand";
 
 export async function GET(req: Request) {
   try {
@@ -24,11 +25,17 @@ export async function GET(req: Request) {
     const query: Record<string, any> = { isDeleted: { $ne: true } };
 
     if (search) {
+      const matchedBrands = await Brand.find({ name: { $regex: search, $options: "i" } }).select("_id");
+      const brandIds = matchedBrands.map(b => b._id);
+
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { sku: { $regex: search, $options: "i" } },
-        { brand: { $regex: search, $options: "i" } },
       ];
+
+      if (brandIds.length > 0) {
+        query.$or.push({ brand: { $in: brandIds } });
+      }
     }
 
     if (category) {
@@ -42,6 +49,7 @@ export async function GET(req: Request) {
     const total = await Product.countDocuments(query);
     const products = await Product.find(query)
       .populate("category", "name slug")
+      .populate("brand", "name slug")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)

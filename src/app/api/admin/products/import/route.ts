@@ -81,12 +81,20 @@ export async function POST(req: Request) {
           images: ((row["Image URLs"] as string) || (row.images as string) || (row.imageUrls as string) || "")
             .split(",")
             .map((s: string) => s.trim())
-            .filter(Boolean),
+            .filter(Boolean)
+            .map((url: string) => ({
+              url,
+              altText: name.trim(),
+              source: "import",
+              sourceType: "url",
+              isVerified: false
+            })),
           tags: ((row.Tags as string) || (row.tags as string) || "")
             .split(",")
             .map((s: string) => s.trim())
             .filter(Boolean),
-          isActive: true,
+          status: ((row.Status as string) || (row.status as string) || "PENDING_VERIFICATION").toUpperCase(),
+          isActive: ((row.Status as string) || (row.status as string))?.toUpperCase() === "ACTIVE",
           // Category will be resolved by name
           _categoryName: category.trim(),
         });

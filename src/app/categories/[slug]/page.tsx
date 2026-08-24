@@ -9,9 +9,12 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import { ProductImage } from "@/components/ui/ProductImage";
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = use(params);
-  const slug = resolvedParams.slug;
+  const [slug, setSlug] = useState<string>("");
   const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    params.then((p) => setSlug(p.slug)).catch(console.error);
+  }, [params]);
   const [categoryInfo, setCategoryInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -20,44 +23,86 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
   const [total, setTotal] = useState(0);
 
   const [sort, setSort] = useState("newest");
+  const [filters, setFilters] = useState<any>({ brands: [], attributes: {} });
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedAttrs, setSelectedAttrs] = useState<Record<string, string[]>>({});
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   
   const { addItem: addToCart } = useCartStore();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
 
   useEffect(() => {
+    if (!slug) return;
     fetch("/api/categories")
       .then(r => r.json())
       .then(cats => {
-        const cat = cats.find((c: Record<string, any>) => c.slug === slug);
+        const findCat = (nodes: any[], targetSlug: string): any => {
+          for (const node of nodes) {
+            if (node.slug === targetSlug) return node;
+            if (node.children && node.children.length > 0) {
+              const found = findCat(node.children, targetSlug);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        const cat = findCat(cats, slug);
         if (cat) setCategoryInfo(cat);
       })
       .catch(console.error);
   }, [slug]);
 
   useEffect(() => {
+    if (!slug) return;
+    const controller = new AbortController();
     const fetchProducts = async () => {
       if (page === 1) setLoading(true);
       else setLoadingMore(true);
 
       try {
-        const res = await fetch(`/api/products?category=${slug}&page=${page}&limit=12&sort=${sort}`);
+        const queryParams = new URLSearchParams({
+          category: slug,
+          page: page.toString(),
+          limit: "12",
+          sort
+        });
+
+        if (selectedBrands.length > 0) {
+          queryParams.set("brand", selectedBrands.join(","));
+        }
+
+        Object.entries(selectedAttrs).forEach(([attr, values]) => {
+          if (values.length > 0) {
+            queryParams.set(`attr_${attr}`, values.join(","));
+          }
+        });
+
+        const res = await fetch(`/api/products?${queryParams.toString()}`, { signal: controller.signal });
         if (res.ok) {
           const data = await res.json();
-          if (page === 1) setProducts(data.products);
-          else setProducts(prev => [...prev, ...data.products]);
+          if (page === 1) {
+            setProducts(data.products);
+            setFilters(data.filters || { brands: [], attributes: {} });
+          } else {
+            setProducts(prev => [...prev, ...data.products]);
+          }
           setTotalPages(data.pages);
           setTotal(data.total);
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error.name === 'AbortError') return;
         console.error(error);
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     };
 
     fetchProducts();
-  }, [slug, page, sort]);
+    return () => controller.abort();
+  }, [slug, page, sort, selectedBrands, selectedAttrs]);
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -66,7 +111,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
       name: product.name,
       price: product.discountPrice || product.price,
       image: product.thumbnail || product.images?.[0]?.url || "",
-      brand: product.brand || 'Luxe',
+      brand: product.brand?.name || 'ARJ Store',
       stock: product.stock
     }, 1);
     alert(`Added ${product.name} to cart!`);
@@ -81,7 +126,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         name: product.name,
         price: product.discountPrice || product.price,
         image: product.thumbnail || product.images?.[0]?.url || "",
-        brand: product.brand || 'Luxe',
+        brand: product.brand?.name || 'ARJ Store',
         stock: product.stock
       });
     }
@@ -107,8 +152,25 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           <div className="text-sm font-medium mt-4 text-primary bg-primary/10 inline-block px-3 py-1 rounded-full">
             {total} Products
           </div>
+          
+          {categoryInfo?.children && categoryInfo.children.length > 0 && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {categoryInfo.children.map((child: any) => (
+                <Link 
+                  key={child._id} 
+                  href={`/categories/${child.slug}`}
+                  className="px-4 py-2 bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors rounded-full text-sm font-medium"
+                >
+                  {child.name}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="w-full md:w-auto">
+        <div className="w-full md:w-auto flex gap-2">
+          <Button variant="outline" className="md:hidden" onClick={() => setShowMobileFilters(!showMobileFilters)}>
+            <Filter className="w-4 h-4 mr-2" /> Filters
+          </Button>
           <select 
             value={sort} 
             onChange={(e) => { setSort(e.target.value); setPage(1); }}
@@ -122,8 +184,86 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
         </div>
       </div>
 
-      {loading && page === 1 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Filters Sidebar */}
+        <div className={`w-full md:w-64 shrink-0 space-y-6 ${showMobileFilters ? 'block' : 'hidden md:block'}`}>
+          <div className="flex items-center justify-between md:hidden mb-4">
+            <h3 className="font-bold">Filters</h3>
+            <Button variant="ghost" size="icon" onClick={() => setShowMobileFilters(false)}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {(selectedBrands.length > 0 || Object.values(selectedAttrs).some(v => v.length > 0)) && (
+            <Button 
+              variant="outline" 
+              className="w-full mb-4"
+              onClick={() => {
+                setSelectedBrands([]);
+                setSelectedAttrs({});
+                setPage(1);
+              }}
+            >
+              Clear All Filters
+            </Button>
+          )}
+
+          {filters.brands?.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Brands</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin">
+                {filters.brands.map((b: any) => (
+                  <label key={b._id} className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-primary focus:ring-primary accent-primary"
+                      checked={selectedBrands.includes(b._id)}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedBrands([...selectedBrands, b._id]);
+                        else setSelectedBrands(selectedBrands.filter(id => id !== b._id));
+                        setPage(1);
+                      }}
+                    />
+                    <span className="text-sm group-hover:text-primary transition-colors">{b.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {Object.entries(filters.attributes || {}).map(([attr, values]: any) => (
+            <div key={attr} className="space-y-3 pt-4 border-t">
+              <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">{attr}</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin">
+                {values.map((v: string) => (
+                  <label key={v} className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-primary focus:ring-primary accent-primary"
+                      checked={selectedAttrs[attr]?.includes(v) || false}
+                      onChange={(e) => {
+                        const current = selectedAttrs[attr] || [];
+                        if (e.target.checked) {
+                          setSelectedAttrs({ ...selectedAttrs, [attr]: [...current, v] });
+                        } else {
+                          setSelectedAttrs({ ...selectedAttrs, [attr]: current.filter(val => val !== v) });
+                        }
+                        setPage(1);
+                      }}
+                    />
+                    <span className="text-sm group-hover:text-primary transition-colors">{v}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Product Grid */}
+        <div className="flex-1">
+          {loading && page === 1 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
           {Array(8).fill(0).map((_, i) => (
             <div key={i} className="space-y-4">
               <div className="aspect-[4/5] bg-secondary animate-pulse rounded-2xl" />
@@ -185,7 +325,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                   </div>
 
                   <div className="space-y-1 flex-1">
-                    <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">{product.brand || 'Luxe'}</div>
+                    <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">{product.brand?.name || 'ARJ Store'}</div>
                     <h3 className="font-medium leading-tight line-clamp-2 group-hover:text-primary transition-colors text-sm mb-2">
                       {product.name}
                     </h3>
@@ -216,6 +356,8 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
           )}
         </>
       )}
+        </div>
+      </div>
     </div>
   );
 }

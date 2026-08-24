@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
+  { href: "/admin/catalog-health", label: "Catalog Health", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/coupons", label: "Coupons", icon: Package }, // Reusing icon for now
   { href: "/admin/reviews", label: "Reviews", icon: LayoutDashboard },

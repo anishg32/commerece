@@ -25,7 +25,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     ]).then(([product, cats]) => {
       setForm({
         name: product.name || "",
-        brand: product.brand || "",
+        brand: product.brand?._id || product.brand || "",
         category: product.category?._id || product.category || "",
         subcategory: product.subcategory || "",
         description: product.description || "",
@@ -42,6 +42,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         isBestseller: product.isBestseller || false,
         isNewArrival: product.isNewArrival || false,
         isActive: product.isActive !== false,
+        status: product.status || 'DRAFT',
       });
       setImages((product.images || []).map((url: string) => ({ url })));
       const thumbIndex = product.images?.indexOf(product.thumbnail);
@@ -81,6 +82,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         isBestseller: form.isBestseller,
         isNewArrival: form.isNewArrival,
         isActive: form.isActive,
+        status: form.status,
       };
 
       const res = await fetch(`/api/products/${resolvedParams.id}`, {
@@ -197,6 +199,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         <div className="bg-card border rounded-xl p-6 space-y-4">
           <h2 className="text-lg font-semibold">Tags & Status</h2>
           <TagInput tags={form.tags} onChange={(t: string[]) => updateField("tags", t)} placeholder="Add tag..." label="Tags" />
+          
+          <div className="space-y-1 mt-4">
+            <label className="text-sm font-medium">Lifecycle Status</label>
+            <select value={form.status} onChange={(e) => updateField("status", e.target.value)} className={inputClass}>
+              <option value="DRAFT">Draft</option>
+              <option value="PENDING_VERIFICATION">Pending Verification</option>
+              <option value="ACTIVE">Active / Published</option>
+              <option value="OUT_OF_STOCK">Out of Stock</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
             {(["isFeatured","isBestseller","isNewArrival","isActive"] as const).map((key) => (
               <label key={key} className="flex items-center gap-2 cursor-pointer">
