@@ -3,6 +3,7 @@
 const nextConfig = {
   reactStrictMode: false,
   typescript: { ignoreBuildErrors: true },
+  serverExternalPackages: ["mongoose", "mongodb"],
   allowedDevOrigins: ['10.0.2.2', '192.168.1.13', 'localhost'],
   images: {
     remotePatterns: [
