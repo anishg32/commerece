@@ -6,6 +6,7 @@ import { ProductImage } from "@/components/ui/ProductImage";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
+import Brand from "@/models/Brand";
 
 // Disable Next.js static caching for this page so it always shows the latest products
 export const dynamic = "force-dynamic";
