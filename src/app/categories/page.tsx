@@ -1,22 +1,56 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ProductImage } from "@/components/ui/ProductImage";
+import dbConnect from "@/lib/mongodb";
+import Category from "@/models/Category";
+import Product from "@/models/Product";
 
-export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export const dynamic = "force-dynamic";
 
-  useEffect(() => {
-    fetch("/api/categories")
-      .then(r => r.json())
-      .then(setCategories)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+export default async function CategoriesPage() {
+  await dbConnect();
+
+  const categories = await Category.find({ isActive: true })
+    .sort({ sortOrder: 1, name: 1 })
+    .lean();
+
+  const counts = await Product.aggregate([
+    { $match: { isActive: true, isDeleted: { $ne: true }, status: "ACTIVE" } },
+    { $group: { _id: "$category", count: { $sum: 1 } } }
+  ]);
+  const countMap = new Map(counts.map((c: any) => [c._id.toString(), c.count]));
+
+  const categoryMap = new Map();
+  const roots: any[] = [];
+
+  categories.forEach((cat: any) => {
+    categoryMap.set(cat._id.toString(), {
+      ...cat,
+      children: [],
+      directProductCount: countMap.get(cat._id.toString()) || 0,
+      productCount: 0
+    });
+  });
+
+  categories.forEach((cat: any) => {
+    const node = categoryMap.get(cat._id.toString());
+    if (cat.parentId) {
+      const parent = categoryMap.get(cat.parentId.toString());
+      if (parent) parent.children.push(node);
+      else roots.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const calculateTotalCount = (node: any): number => {
+    let total = node.directProductCount;
+    for (const child of node.children) total += calculateTotalCount(child);
+    node.productCount = total;
+    return total;
+  };
+
+  for (const root of roots) calculateTotalCount(root);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -28,19 +62,15 @@ export default function CategoriesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {loading ? (
-          Array(6).fill(0).map((_, i) => (
-            <div key={i} className="aspect-[4/3] bg-secondary animate-pulse rounded-2xl" />
-          ))
-        ) : categories.length === 0 ? (
+        {roots.length === 0 ? (
           <div className="col-span-full py-20 text-center text-muted-foreground">
             No categories available.
           </div>
         ) : (
-          categories.map((cat) => (
-            <Link key={cat._id} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/3]">
+          roots.map((cat) => (
+            <Link key={cat._id.toString()} href={`/categories/${cat.slug}`} className="group relative block overflow-hidden rounded-2xl aspect-[4/3]">
               <ProductImage 
-                src={cat.image?.url} 
+                src={cat.image?.url || (typeof cat.image === 'string' ? cat.image : "")} 
                 alt={cat.name} 
                 fill 
                 className="object-cover transition-transform duration-700 group-hover:scale-105"

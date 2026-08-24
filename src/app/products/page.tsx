@@ -34,10 +34,14 @@ function ProductsContent() {
   const activeCategoryData = categories.find(c => c.slug === category);
 
   useEffect(() => {
-    fetch("/api/categories")
+    const controller = new AbortController();
+    fetch("/api/categories", { signal: controller.signal })
       .then(r => r.json())
       .then(setCategories)
-      .catch(console.error);
+      .catch(e => {
+        if (e.name !== 'AbortError') console.error(e);
+      });
+    return () => controller.abort();
   }, []);
 
   // Reset attribute filters when category changes
