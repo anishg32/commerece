@@ -154,8 +154,6 @@ ProductSchema.pre("save", function (this: IProduct) {
 // Indexes for faster queries
 // Note: We remove brand from text index because it's now an ObjectId. Text search can't search ObjectIds effectively without a $lookup pipeline, which happens at controller level.
 ProductSchema.index({ name: "text", description: "text", tags: "text" });
-ProductSchema.index({ slug: 1 });
-ProductSchema.index({ sku: 1 });
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ brand: 1 });
 ProductSchema.index({ isActive: 1, isDeleted: 1 });

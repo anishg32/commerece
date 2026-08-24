@@ -23,7 +23,6 @@ const BrandSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-BrandSchema.index({ slug: 1 });
 BrandSchema.index({ isActive: 1 });
 
 export default mongoose.models.Brand ||
